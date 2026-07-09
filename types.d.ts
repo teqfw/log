@@ -1,35 +1,19 @@
-export type TeqFw_Log_Level =
-  | 'trace'
-  | 'debug'
-  | 'info'
-  | 'warn'
-  | 'error'
-  | 'fatal';
+declare global {
+  type TeqFw_Log_Enum_Level = typeof import("./src/Enum/Level.mjs").default;
+  type TeqFw_Log_Level = TeqFw_Log_Enum_Level[keyof TeqFw_Log_Enum_Level];
 
-export interface TeqFw_Log_Data {
-  [key: string]: any;
+  type TeqFw_Log_Provider__Factory = typeof import("./src/Provider.mjs").default;
+  type TeqFw_Log_Provider = ReturnType<TeqFw_Log_Provider__Factory>;
+
+  type TeqFw_Log_Logger = ReturnType<typeof import("./src/Logger.mjs").default>;
+
+  type TeqFw_Log_Record_Factory = {
+    create: typeof import("./src/Record/Factory.mjs").createLogRecord;
+  };
+  type TeqFw_Log_Record = ReturnType<typeof import("./src/Record/Factory.mjs").createLogRecord>;
+  type TeqFw_Log_Data = NonNullable<TeqFw_Log_Record["data"]>;
+
+  type TeqFw_Log_Console_Writer = ReturnType<typeof import("./src/Console/Writer.mjs").default>;
 }
 
-export interface TeqFw_Log_Record {
-  level: TeqFw_Log_Level;
-  message: string;
-  data?: TeqFw_Log_Data;
-  source?: string;
-  time?: Date | string | number;
-}
-
-export interface TeqFw_Log_Provider {
-  forSource(source: string): TeqFw_Log_Logger;
-}
-
-export interface TeqFw_Log_Logger {
-  isEnabled(level: TeqFw_Log_Level): boolean;
-  write(record: TeqFw_Log_Record): void;
-  log(level: TeqFw_Log_Level, message: string, data?: TeqFw_Log_Data): void;
-  trace(message: string, data?: TeqFw_Log_Data): void;
-  debug(message: string, data?: TeqFw_Log_Data): void;
-  info(message: string, data?: TeqFw_Log_Data): void;
-  warn(message: string, data?: TeqFw_Log_Data): void;
-  error(message: string, data?: TeqFw_Log_Data): void;
-  fatal(message: string, data?: TeqFw_Log_Data): void;
-}
+export {};
