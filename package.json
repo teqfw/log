@@ -1,0 +1,54 @@
+{
+  "name": "@teqfw/log",
+  "version": "0.1.0",
+  "description": "Base logging contract package for the TeqFW platform.",
+  "keywords": [
+    "log",
+    "logger",
+    "logging",
+    "teqfw",
+    "tequila framework",
+    "console"
+  ],
+  "homepage": "https://github.com/teqfw/log#readme",
+  "bugs": {
+    "url": "https://github.com/teqfw/log/issues"
+  },
+  "license": "Apache-2.0",
+  "author": {
+    "name": "Alex Gusev",
+    "email": "alex@flancer64.com",
+    "url": "https://github.com/flancer64"
+  },
+  "files": [
+    "CHANGELOG.md",
+    "README.md",
+    "types.d.ts"
+  ],
+  "types": "types.d.ts",
+  "type": "module",
+  "teqfw": {
+    "namespaces": [
+      {
+        "prefix": "TeqFw_Log_",
+        "path": "./src",
+        "ext": ".mjs"
+      }
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/teqfw/log.git"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "funding": {
+    "type": "individual",
+    "url": "https://github.com/sponsors/teqfw"
+  },
+  "devDependencies": {
+    "@types/node": "^26.1.1",
+    "typescript": "^7.0.2"
+  }
+}
