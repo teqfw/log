@@ -18,7 +18,6 @@
  *   source?: string,
  *   time: Date|string|number
  * }} TeqFw_Log_Record_Dto
- * @typedef {{create: (params: TeqFw_Log_Record_Input) => TeqFw_Log_Record_Dto}} TeqFw_Log_Record_Factory_Api
  */
 
 const RECORD_TIME_NOW = () => new Date();
@@ -55,15 +54,17 @@ export function createLogRecord({level, message, data, source, time}) {
 }
 
 /**
- * @this {TeqFw_Log_Record_Factory_Api}
- * @returns {void}
+ * @implements {TeqFw_Log_Record_Factory}
  */
-export default function TeqFw_Log_Record_Factory() {
-    /**
-     * @param {TeqFw_Log_Record_Input} params
-     * @returns {TeqFw_Log_Record_Dto}
-     */
-    this.create = function (params) {
-        return createLogRecord(params);
+export default class Factory {
+    constructor() {
+        /**
+         * @param {TeqFw_Log_Record_Input} params
+         * @returns {TeqFw_Log_Record_Dto}
+         */
+        this.create = function (params) {
+            return createLogRecord(params);
+        };
+        Object.freeze(this);
     }
 }

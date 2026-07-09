@@ -7,11 +7,11 @@ import TeqFw_Log_Record_Factory from '../../../src/Record/Factory.mjs';
 
 describe('TeqFw_Log_Logger', () => {
     const calls = [];
-    const writer = (record) => calls.push(record);
+    const writer = {write: (record) => calls.push(record)};
     const recordFactory = new TeqFw_Log_Record_Factory();
 
     it('implements source-bound logger module directly', () => {
-        const logger = TeqFw_Log_Logger({
+        const logger = new TeqFw_Log_Logger({
             levels: TeqFw_Log_Enum_Level,
             recordFactory,
             writer,
@@ -26,7 +26,7 @@ describe('TeqFw_Log_Logger', () => {
     });
 
     it('maps helper methods to fixed levels', () => {
-        const logger = TeqFw_Log_Logger({
+        const logger = new TeqFw_Log_Logger({
             levels: TeqFw_Log_Enum_Level,
             recordFactory,
             writer,
@@ -46,7 +46,7 @@ describe('TeqFw_Log_Logger', () => {
     });
 
     it('rejects conflicting record source', () => {
-        const logger = TeqFw_Log_Logger({
+        const logger = new TeqFw_Log_Logger({
             levels: TeqFw_Log_Enum_Level,
             recordFactory,
             writer,
@@ -59,13 +59,13 @@ describe('TeqFw_Log_Logger', () => {
     });
 
     it('rejects invalid source', () => {
-        assert.throws(() => TeqFw_Log_Logger({
+        assert.throws(() => new TeqFw_Log_Logger({
             levels: TeqFw_Log_Enum_Level,
             recordFactory,
             writer,
             source: 'service',
         }), /invalid/);
-        assert.throws(() => TeqFw_Log_Logger({
+        assert.throws(() => new TeqFw_Log_Logger({
             levels: TeqFw_Log_Enum_Level,
             recordFactory,
             writer,

@@ -23,13 +23,13 @@ describe('TeqFw_Log_Console_Writer', () => {
     });
 
     it('maps levels to deterministic console methods', () => {
-        const write = TeqFw_Log_Console_Writer();
-        write({level: 'trace', message: 't', source: 'App_A'});
-        write({level: 'debug', message: 'd', source: 'App_A'});
-        write({level: 'info', message: 'i', source: 'App_A'});
-        write({level: 'warn', message: 'w', source: 'App_A'});
-        write({level: 'error', message: 'e', source: 'App_A'});
-        write({level: 'fatal', message: 'f', source: 'App_A'});
+        const writer = new TeqFw_Log_Console_Writer();
+        writer.write({level: 'trace', message: 't', source: 'App_A'});
+        writer.write({level: 'debug', message: 'd', source: 'App_A'});
+        writer.write({level: 'info', message: 'i', source: 'App_A'});
+        writer.write({level: 'warn', message: 'w', source: 'App_A'});
+        writer.write({level: 'error', message: 'e', source: 'App_A'});
+        writer.write({level: 'fatal', message: 'f', source: 'App_A'});
 
         assert.deepEqual(
             calls.map((item) => item.method),
@@ -38,10 +38,10 @@ describe('TeqFw_Log_Console_Writer', () => {
     });
 
     it('preserves error details in data.err', () => {
-        const write = TeqFw_Log_Console_Writer();
+        const writer = new TeqFw_Log_Console_Writer();
         const err = new Error('broken');
         err.code = 'E_TEST';
-        write({
+        writer.write({
             level: 'error',
             message: 'failed',
             source: 'App_A',

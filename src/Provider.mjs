@@ -3,49 +3,43 @@
 /**
  * @namespace TeqFw_Log_Provider
  * @description Root provider that returns source-bound logger instances.
- * @typedef {typeof import('./Enum/Level.mjs').default} TeqFw_Log_Provider_Levels
- * @typedef {typeof import('./Logger.mjs')} TeqFw_Log_Provider_LoggerModule
- * @typedef {{create: typeof import('./Record/Factory.mjs').createLogRecord}} TeqFw_Log_Provider_RecordFactory
- * @typedef {ReturnType<typeof import('./Console/Writer.mjs').default>} TeqFw_Log_Provider_Writer
- * @typedef {ReturnType<typeof import('./Logger.mjs').default>} TeqFw_Log_Provider_Logger
- * @typedef {object} TeqFw_Log_Provider_Api
- * @property {(source: string) => TeqFw_Log_Provider_Logger} forSource
  */
 
-const LOGGER_CACHE = new Map();
-
-/**
- * @param {{
- *   levels: TeqFw_Log_Provider_Levels,
- *   loggerModule: TeqFw_Log_Provider_LoggerModule,
- *   recordFactory: TeqFw_Log_Provider_RecordFactory,
- *   writer: TeqFw_Log_Provider_Writer
- * }} deps
- * @returns {TeqFw_Log_Provider_Api}
- */
-export default function TeqFw_Log_Provider({levels, loggerModule, recordFactory, writer}) {
-    /** @type {Map<string, TeqFw_Log_Provider_Logger>} */
-    const cache = new Map(LOGGER_CACHE);
-
-    return Object.freeze(/** @type {TeqFw_Log_Provider_Api} */ ({
+export default class Provider {
+    /**
+     * @param {{
+     *   levels: {default: TeqFw_Log_Enum_Level},
+     *   loggerModule: {default: TeqFw_Log_Logger__Factory},
+     *   recordFactory: TeqFw_Log_Record_Factory,
+     *   writer: TeqFw_Log_Console_Writer
+     * }} deps
+     */
+    constructor({levels, loggerModule, recordFactory, writer}) {
+        this.levels = levels.default;
+        this.loggerModule = loggerModule;
+        this.recordFactory = recordFactory;
+        this.writer = writer;
+        /** @type {Map<string, TeqFw_Log_Logger>} */
+        this.cache = new Map();
         /**
          * @param {string} source
-         * @returns {TeqFw_Log_Provider_Logger}
+         * @returns {TeqFw_Log_Logger}
          */
-        forSource(source) {
-            const existing = cache.get(source);
+        this.forSource = function (source) {
+            const existing = this.cache.get(source);
             if (existing) return existing;
 
-            const logger = loggerModule.default({
-                levels,
-                recordFactory,
-                writer,
+            const logger = new this.loggerModule.default({
+                levels: this.levels,
+                recordFactory: this.recordFactory,
+                writer: this.writer,
                 source,
             });
-            cache.set(source, logger);
+            this.cache.set(source, logger);
             return logger;
-        },
-    }));
+        };
+        Object.freeze(this);
+    }
 }
 
 export const __deps__ = Object.freeze({

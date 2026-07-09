@@ -24,6 +24,7 @@
     "ai/",
     "src/",
     "CHANGELOG.md",
+    "jsconfig.json",
     "README.md",
     "types.d.ts"
   ],
