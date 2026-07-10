@@ -58,10 +58,6 @@ export const PACKAGE_API: PackageApiContract = {
     packageRole: 'Minimal TeqFW logging contract with a DI root provider, source-bound logger, immutable log records, and a reference console writer.',
     canonicalEntrypoints: [
         '@teqfw/log',
-        '@teqfw/log/src/Logger.mjs',
-        '@teqfw/log/src/Enum/Level.mjs',
-        '@teqfw/log/src/Record/Factory.mjs',
-        '@teqfw/log/src/Console/Writer.mjs',
     ],
     publicRuntime: [
         {
@@ -73,12 +69,6 @@ export const PACKAGE_API: PackageApiContract = {
                     specifier: '@teqfw/log',
                     exportName: 'default',
                     canonical: true,
-                },
-                {
-                    specifier: '@teqfw/log/src/Provider.mjs',
-                    exportName: 'default',
-                    canonical: false,
-                    note: 'Explicit source subpath export. Prefer the package root import for the provider.',
                 },
             ],
             methods: [
@@ -93,83 +83,28 @@ export const PACKAGE_API: PackageApiContract = {
                 },
             ],
         },
-        {
-            alias: 'TeqFw_Log_Logger',
-            kind: 'factory',
-            role: 'Creates a source-bound logger that validates levels, normalizes records, and writes through the configured sink.',
-            imports: [
-                {
-                    specifier: '@teqfw/log/src/Logger.mjs',
-                    exportName: 'default',
-                    canonical: true,
-                },
-            ],
-            methods: [
-                {
-                    name: 'isEnabled',
-                    signature: 'isEnabled(level: TeqFw_Log_Level): boolean',
-                    summary: 'Checks whether a level is valid and enabled for the bound logger.',
-                },
-                {
-                    name: 'write',
-                    signature: 'write(record: TeqFw_Log_Record): void',
-                    summary: 'Writes one log record using the bound source unless the record already carries the same source.',
-                    constraints: [
-                        'A record source that conflicts with the bound source is invalid.',
-                    ],
-                },
-                {
-                    name: 'log',
-                    signature: 'log(level: TeqFw_Log_Level, message: string, data?: TeqFw_Log_Data): void',
-                    summary: 'Writes one structured log entry for the provided level.',
-                },
-                {
-                    name: 'trace/debug/info/warn/error/fatal',
-                    signature: '(message: string, data?: TeqFw_Log_Data): void',
-                    summary: 'Level-specific convenience helpers over `log(...)`.',
-                },
-            ],
-        },
-        {
-            alias: 'TeqFw_Log_Record_Factory',
-            kind: 'factory',
-            role: 'Creates immutable record DTOs that follow the base logging contract.',
-            imports: [
-                {
-                    specifier: '@teqfw/log/src/Record/Factory.mjs',
-                    exportName: 'default',
-                    canonical: true,
-                },
-            ],
-            methods: [
-                {
-                    name: 'create',
-                    signature: 'create(params: TeqFw_Log_Record_Input): TeqFw_Log_Record',
-                    summary: 'Builds and freezes one log record DTO.',
-                },
-            ],
-        },
-        {
-            alias: 'TeqFw_Log_Console_Writer',
-            kind: 'factory',
-            role: 'Reference writer that maps structured log records to the host console API.',
-            imports: [
-                {
-                    specifier: '@teqfw/log/src/Console/Writer.mjs',
-                    exportName: 'default',
-                    canonical: true,
-                },
-            ],
-            methods: [
-                {
-                    name: 'write',
-                    signature: '(record: TeqFw_Log_Record): void',
-                    summary: 'Writes one normalized record to `console.debug/info/warn/error` depending on level.',
-                },
-            ],
-        },
     ],
     structuralContracts: [
+        {
+            name: 'Log Provider',
+            kind: 'protocol',
+            aliases: ['TeqFw_Log_Provider'],
+            summary: 'Public root dependency that returns source-bound loggers for stable component sources.',
+            notes: [
+                'This is the only supported runtime import from the published npm package.',
+                'Provider instances expose forSource(source) and may cache logger instances per source.',
+            ],
+        },
+        {
+            name: 'Source-Bound Logger',
+            kind: 'protocol',
+            aliases: ['TeqFw_Log_Logger'],
+            summary: 'Runtime logger returned by the provider for one stable TeqFW component source.',
+            notes: [
+                'Consumer code relies on logger instances returned by the provider rather than importing logger internals directly.',
+                'Supported behavior includes isEnabled(level), write(record), log(level, message, data), and fixed-level helpers.',
+            ],
+        },
         {
             name: 'Log Level',
             kind: 'enum',
@@ -211,6 +146,7 @@ export const PACKAGE_API: PackageApiContract = {
     operationalNotes: [
         'Package code should usually depend on TeqFw_Log_Provider rather than construct loggers directly.',
         'Bind one stable source once and reuse the returned logger.',
+        'The npm package intentionally exposes only the root provider entrypoint; package-internal source files are not part of the supported public API.',
         'Behavior not documented in this file or the companion ai/*.md documents should be treated as unsupported.',
     ],
 };

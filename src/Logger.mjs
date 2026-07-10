@@ -32,8 +32,8 @@ export default class Logger {
     /**
      * @param {{
      *   levels: TeqFw_Log_Enum_Level,
-     *   recordFactory: TeqFw_Log_Record_Factory,
-     *   writer: TeqFw_Log_Console_Writer,
+     *   recordFactory: TeqFw_Log_Record_Factory$,
+     *   writer: TeqFw_Log_Console_Writer$,
      *   source: string
      * }} deps
      */

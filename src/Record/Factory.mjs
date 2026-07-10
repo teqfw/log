@@ -54,7 +54,7 @@ export function createLogRecord({level, message, data, source, time}) {
 }
 
 /**
- * @implements {TeqFw_Log_Record_Factory}
+ * @implements {TeqFw_Log_Record_Factory$}
  */
 export default class Factory {
     constructor() {

@@ -22,6 +22,7 @@
   },
   "files": [
     "ai/",
+    "LICENSE",
     "src/",
     "CHANGELOG.md",
     "jsconfig.json",
@@ -32,12 +33,7 @@
     ".": {
       "import": "./src/Provider.mjs",
       "default": "./src/Provider.mjs"
-    },
-    "./src/Provider.mjs": "./src/Provider.mjs",
-    "./src/Logger.mjs": "./src/Logger.mjs",
-    "./src/Enum/Level.mjs": "./src/Enum/Level.mjs",
-    "./src/Record/Factory.mjs": "./src/Record/Factory.mjs",
-    "./src/Console/Writer.mjs": "./src/Console/Writer.mjs"
+    }
   },
   "types": "types.d.ts",
   "type": "module",
@@ -57,10 +53,11 @@
   "scripts": {
     "test:unit": "find test/unit -name '*.test.mjs' -print0 | xargs -0 node --test",
     "test:integration": "find test/integration -name '*.test.mjs' -print0 | xargs -0 node --test",
-    "test": "npm run test:unit && npm run test:integration"
+    "test:publish": "node --test test/publish/smoke.test.mjs",
+    "test": "npm run test:unit && npm run test:integration && npm run test:publish"
   },
   "dependencies": {
-    "@teqfw/di": "^2.6.2"
+    "@teqfw/di": "^2.7.0"
   },
   "engines": {
     "node": ">=20"
