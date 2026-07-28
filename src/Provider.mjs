@@ -7,12 +7,11 @@
 
 export default class Provider {
     /**
-     * @param {{
-     *   levels: {default: TeqFw_Log_Enum_Level},
-     *   loggerModule: TeqFw_Log_Logger,
-     *   recordFactory: TeqFw_Log_Record_Factory$,
-     *   writer: TeqFw_Log_Console_Writer$
-     * }} deps
+     * @param {object} deps
+     * @param {object} deps.levels
+     * @param {TeqFw_Log_Logger} deps.loggerModule
+     * @param {TeqFw_Log_Record_Factory$} deps.recordFactory
+     * @param {TeqFw_Log_Writer$} deps.writer
      */
     constructor({levels, loggerModule, recordFactory, writer}) {
         this.levels = levels.default;

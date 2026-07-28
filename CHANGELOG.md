@@ -1,5 +1,12 @@
 # Changelog
 
+## [Unreleased]
+
+### Changed
+- Migrated package metadata from `teqfw.namespaces` to distributed `teqfw.fw.di.namespace` and `teqfw.fw.log.bootstrap` protocols.
+- Added the public `@teqfw/log/bootstrap` Composition Root API.
+- Contained writer failures during record emission and writer shutdown without replacing primary operational errors.
+
 ## [0.1.0] - 2026-07-09 - Initial npm package bootstrap
 
 ### Added

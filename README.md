@@ -24,13 +24,33 @@ The package is intended for source-bound structured logging in TeqFW codebases. 
 
 ## Public npm API
 
-The published npm package exposes one public entrypoint:
+The published npm package exposes two supported entrypoints:
 
 ```js
 import TeqFw_Log_Provider from '@teqfw/log';
+import {createBootstrap} from '@teqfw/log/bootstrap';
 ```
 
-The provider is the supported root dependency for consumer code. It returns source-bound logger instances through `forSource(source)`.
+`@teqfw/log` is the DI component entrypoint. Applications normally let a configured Container resolve `TeqFw_Log_Provider$`; package code receives that provider and calls `forSource(source)`.
+
+`@teqfw/log/bootstrap` is the Composition Root API. It creates a ready provider without importing `Logger`, `Level`, record factories, or writers from package internals:
+
+```js
+import {createBootstrap} from '@teqfw/log/bootstrap';
+
+const logging = await createBootstrap();
+const provider = logging.provider;
+
+try {
+    // configure and run the application
+} finally {
+    logging.shutdown();
+}
+```
+
+Pass `{writers: [writerA, writerB]}` only when a Composition Root owns custom writers. Each writer must expose `write(record)`. Records are offered in array order; optional `shutdown()` or `close()` hooks run in reverse order. Writer failures are contained, reported best-effort to guarded stderr, and never replace the application's primary error.
+
+The manifest uses distributed metadata: `teqfw.fw.di.namespace` is the DI-owned namespace declaration, and `teqfw.fw.log.bootstrap` is the minimal logging-owned pre-Container declaration. `teqfw.namespaces` is not supported.
 
 ```js
 export default function Service({logger}) {
@@ -65,3 +85,4 @@ ADSM and TeqFW are original developments by Alex Gusev.
 
 - The distributable package includes `ai/` documents for agent-facing usage and API guidance.
 - The repository may contain additional cognitive context in `ctx/`, but that repository branch is not part of the npm package.
+- Internal `src/**` modules are intentionally not npm import entrypoints; use only the export-map paths above.

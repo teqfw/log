@@ -1,20 +1,56 @@
-declare global {
-  type TeqFw_Log_Enum_Level = typeof import("./src/Enum/Level.mjs").default;
-  type TeqFw_Log_Level = TeqFw_Log_Enum_Level[keyof TeqFw_Log_Enum_Level];
+export type TeqFw_Log_Level = 'trace' | 'debug' | 'info' | 'warn' | 'error' | 'fatal';
 
-  type TeqFw_Log_Provider = typeof import("./src/Provider.mjs").default;
-  type TeqFw_Log_Provider$ = InstanceType<typeof import("./src/Provider.mjs").default>;
+export type TeqFw_Log_Data = Record<string, unknown>;
 
-  type TeqFw_Log_Logger = typeof import("./src/Logger.mjs").default;
-  type TeqFw_Log_Logger$ = InstanceType<typeof import("./src/Logger.mjs").default>;
-
-  type TeqFw_Log_Record_Factory = typeof import("./src/Record/Factory.mjs").default;
-  type TeqFw_Log_Record_Factory$ = InstanceType<typeof import("./src/Record/Factory.mjs").default>;
-  type TeqFw_Log_Record = ReturnType<typeof import("./src/Record/Factory.mjs").createLogRecord>;
-  type TeqFw_Log_Data = NonNullable<TeqFw_Log_Record["data"]>;
-
-  type TeqFw_Log_Console_Writer = typeof import("./src/Console/Writer.mjs").default;
-  type TeqFw_Log_Console_Writer$ = InstanceType<typeof import("./src/Console/Writer.mjs").default>;
+export interface TeqFw_Log_Record {
+  readonly level: TeqFw_Log_Level;
+  readonly message: string;
+  readonly data?: Readonly<TeqFw_Log_Data>;
+  readonly source?: string;
+  readonly time: Date | string | number;
 }
 
-export {};
+export interface TeqFw_Log_Logger {
+  isEnabled(level: TeqFw_Log_Level): boolean;
+  write(record: TeqFw_Log_Record): void;
+  log(level: TeqFw_Log_Level, message: string, data?: TeqFw_Log_Data): void;
+  trace(message: string, data?: TeqFw_Log_Data): void;
+  debug(message: string, data?: TeqFw_Log_Data): void;
+  info(message: string, data?: TeqFw_Log_Data): void;
+  warn(message: string, data?: TeqFw_Log_Data): void;
+  error(message: string, data?: TeqFw_Log_Data): void;
+  fatal(message: string, data?: TeqFw_Log_Data): void;
+}
+
+export interface TeqFw_Log_Provider$ {
+  forSource(source: string): TeqFw_Log_Logger;
+}
+
+/**
+ * DI component constructor. Applications normally receive the instance from a
+ * configured Container; Composition Roots use @teqfw/log/bootstrap instead.
+ */
+export interface TeqFw_Log_Provider {
+  new (dependencies: unknown): TeqFw_Log_Provider$;
+}
+
+export interface TeqFw_Log_Bootstrap_Options {
+  writers?: readonly TeqFw_Log_Writer$[];
+}
+
+declare const Provider: TeqFw_Log_Provider;
+
+export default Provider;
+
+declare global {
+  type TeqFw_Log_Enum_Level = Readonly<{
+    TRACE: 'trace'; DEBUG: 'debug'; INFO: 'info'; WARN: 'warn'; ERROR: 'error'; FATAL: 'fatal';
+  }>;
+  type TeqFw_Log_Provider$ = import('./types.d.ts').TeqFw_Log_Provider$;
+  type TeqFw_Log_Logger$ = import('./types.d.ts').TeqFw_Log_Logger;
+  type TeqFw_Log_Record_Factory$ = Readonly<{create(record: Omit<TeqFw_Log_Record, 'time'> & {time?: Date | string | number}): TeqFw_Log_Record}>;
+  type TeqFw_Log_Console_Writer$ = Readonly<{write(record: TeqFw_Log_Record): void}>;
+  type TeqFw_Log_Writer$ = Readonly<{write(record: TeqFw_Log_Record): void, shutdown?: () => void, close?: () => void}>;
+  type TeqFw_Log_Bootstrap_Result = import('./bootstrap.d.ts').BootstrapResult;
+  type TeqFw_Log_Bootstrap_Options = import('./types.d.ts').TeqFw_Log_Bootstrap_Options;
+}

@@ -2,6 +2,22 @@
 
 Version: 20260709
 
+## Composition Root Usage
+
+```js
+import {createBootstrap} from '@teqfw/log/bootstrap';
+
+const logging = await createBootstrap();
+
+try {
+    // configure the Container and run the application
+} finally {
+    logging.shutdown();
+}
+```
+
+Do not construct a provider by importing `src/**` modules. For custom Composition Root writers, pass `{writers: [writerA, writerB]}` to `createBootstrap()`. Writers receive records in declaration order and close in reverse order.
+
 ## Canonical DI Usage
 
 ```js
@@ -37,6 +53,7 @@ export const __deps__ = {
 
 - creating source-bound loggers inside business methods;
 - depending on package-internal files through undocumented subpath imports;
+- constructing `Logger`, `Level`, a record factory, or a writer from `src/**`;
 - using file paths, package names, or generic labels as `source`;
 - encoding metadata into message strings;
 - inventing mandatory `event` names;

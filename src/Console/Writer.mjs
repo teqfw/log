@@ -6,6 +6,9 @@
  */
 
 export default class Writer {
+    /**
+     * Creates the reference console writer.
+     */
     constructor() {
         /**
          * @param {unknown} err

@@ -8,6 +8,23 @@
 const SOURCE_PATTERN = /^[A-Z][A-Za-z0-9]*(?:_[A-Z][A-Za-z0-9]*)+$/;
 
 /**
+ * Reports a writer error without invoking another logger or allowing a
+ * diagnostic problem to change application control flow.
+ *
+ * @param {unknown} error
+ * @returns {void}
+ */
+function reportWriterFailure(error) {
+    try {
+        if ((typeof process !== 'undefined') && (typeof process.stderr?.write === 'function')) {
+            process.stderr.write(`[teqfw/log] writer failure: ${String(error)}\n`);
+        }
+    } catch {
+        // Guarded fallback diagnostics must remain non-throwing.
+    }
+}
+
+/**
  * @param {string} source
  * @returns {void}
  */
@@ -30,12 +47,11 @@ function assertLevel(allowedLevels, level) {
 
 export default class Logger {
     /**
-     * @param {{
-     *   levels: TeqFw_Log_Enum_Level,
-     *   recordFactory: TeqFw_Log_Record_Factory$,
-     *   writer: TeqFw_Log_Console_Writer$,
-     *   source: string
-     * }} deps
+     * @param {object} deps
+     * @param {TeqFw_Log_Enum_Level} deps.levels
+     * @param {TeqFw_Log_Record_Factory$} deps.recordFactory
+     * @param {TeqFw_Log_Writer$} deps.writer
+     * @param {string} deps.source
      */
     constructor({levels, recordFactory, writer, source}) {
         this.levelMap = levels;
@@ -80,24 +96,32 @@ export default class Logger {
          */
         this.write = function (record) {
             const normalized = normalizeRecord(record);
-            this.writer.write(normalized);
+            try {
+                this.writer.write(normalized);
+            } catch (error) {
+                reportWriterFailure(error);
+            }
         };
 
         /**
          * @param {TeqFw_Log_Level} level
          * @param {string} message
-         * @param {TeqFw_Log_Data} [data]
+         * @param {TeqFw_Log_Data} data
          * @returns {void}
          */
         this.log = function (level, message, data) {
             assertLevel(this.allowedLevels, level);
             const normalized = this.recordFactory.create({level, message, data, source: this.source});
-            this.writer.write(normalized);
+            try {
+                this.writer.write(normalized);
+            } catch (error) {
+                reportWriterFailure(error);
+            }
         };
 
         /**
          * @param {string} message
-         * @param {TeqFw_Log_Data} [data]
+         * @param {TeqFw_Log_Data} data
          * @returns {void}
          */
         this.trace = function (message, data) {
@@ -106,7 +130,7 @@ export default class Logger {
 
         /**
          * @param {string} message
-         * @param {TeqFw_Log_Data} [data]
+         * @param {TeqFw_Log_Data} data
          * @returns {void}
          */
         this.debug = function (message, data) {
@@ -115,7 +139,7 @@ export default class Logger {
 
         /**
          * @param {string} message
-         * @param {TeqFw_Log_Data} [data]
+         * @param {TeqFw_Log_Data} data
          * @returns {void}
          */
         this.info = function (message, data) {
@@ -124,7 +148,7 @@ export default class Logger {
 
         /**
          * @param {string} message
-         * @param {TeqFw_Log_Data} [data]
+         * @param {TeqFw_Log_Data} data
          * @returns {void}
          */
         this.warn = function (message, data) {
@@ -133,7 +157,7 @@ export default class Logger {
 
         /**
          * @param {string} message
-         * @param {TeqFw_Log_Data} [data]
+         * @param {TeqFw_Log_Data} data
          * @returns {void}
          */
         this.error = function (message, data) {
@@ -142,7 +166,7 @@ export default class Logger {
 
         /**
          * @param {string} message
-         * @param {TeqFw_Log_Data} [data]
+         * @param {TeqFw_Log_Data} data
          * @returns {void}
          */
         this.fatal = function (message, data) {

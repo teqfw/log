@@ -20,6 +20,9 @@
  * }} TeqFw_Log_Record_Dto
  */
 
+/**
+ * @returns {Date}
+ */
 const RECORD_TIME_NOW = () => new Date();
 
 /**
@@ -34,7 +37,8 @@ export function isLogDataObject(value) {
  * @param {TeqFw_Log_Record_Input} params
  * @returns {TeqFw_Log_Record_Dto}
  */
-export function createLogRecord({level, message, data, source, time}) {
+export function createLogRecord(params) {
+    const {level, message, data, source, time} = params;
     if (typeof level !== 'string') throw new Error('Log level must be a string.');
     if (typeof message !== 'string') throw new Error('Log message must be a string.');
     if ((data !== undefined) && !isLogDataObject(data)) {
@@ -57,6 +61,9 @@ export function createLogRecord({level, message, data, source, time}) {
  * @implements {TeqFw_Log_Record_Factory$}
  */
 export default class Factory {
+    /**
+     * Creates the immutable record factory.
+     */
     constructor() {
         /**
          * @param {TeqFw_Log_Record_Input} params

@@ -22,7 +22,7 @@ async function run(cmd, args, cwd) {
 }
 
 describe('Publish smoke', () => {
-    it('installs packed tarball, imports root entrypoint, and type-checks consumer code', async () => {
+    it('installs packed tarball, exposes only supported APIs, and type-checks bootstrap consumers', async () => {
         const tmpRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'teqfw-log-publish-'));
         const packDir = path.join(tmpRoot, 'pack');
         const consumerDir = path.join(tmpRoot, 'consumer');
@@ -57,34 +57,32 @@ describe('Publish smoke', () => {
         }, null, 2));
 
         await fs.writeFile(path.join(consumerDir, 'index.ts'), [
-            "import TeqFw_Log_Provider from '@teqfw/log';",
+            "import {createBootstrap, type TeqFw_Log_Record} from '@teqfw/log/bootstrap';",
             '',
-            'const provider = new TeqFw_Log_Provider({',
-            "  levels: {default: {TRACE: 'trace', DEBUG: 'debug', INFO: 'info', WARN: 'warn', ERROR: 'error', FATAL: 'fatal'}},",
-            '  loggerModule: class {',
-            "    source = 'App_User_Service';",
-            '    constructor() {}',
-            '    isEnabled(_level: TeqFw_Log_Level) { return true; }',
-            '    write(_record: TeqFw_Log_Record) {}',
-            '    log(_level: TeqFw_Log_Level, _message: string, _data?: TeqFw_Log_Data) {}',
-            '    trace(_message: string, _data?: TeqFw_Log_Data) {}',
-            '    debug(_message: string, _data?: TeqFw_Log_Data) {}',
-            '    info(_message: string, _data?: TeqFw_Log_Data) {}',
-            '    warn(_message: string, _data?: TeqFw_Log_Data) {}',
-            '    error(_message: string, _data?: TeqFw_Log_Data) {}',
-            '    fatal(_message: string, _data?: TeqFw_Log_Data) {}',
-            '  },',
-            '  recordFactory: {create(record: any) { return record; }},',
-            '  writer: {write() {}},',
-            '});',
-            "const logger = provider.forSource('App_User_Service');",
+            'const bootstrap = await createBootstrap({writers: [{write(_record: TeqFw_Log_Record) {}}]});',
+            "const logger = bootstrap.provider.forSource('App_User_Service');",
             "logger.info('ok');",
+            'bootstrap.shutdown();',
             '',
         ].join('\n'));
 
-        const {stdout: importStdout} = await run('node', ['--input-type=module', '-e', "import TeqFw_Log_Provider from '@teqfw/log'; console.log(typeof TeqFw_Log_Provider);"], consumerDir);
+        const {stdout: importStdout} = await run('node', ['--input-type=module', '-e', "import {createBootstrap} from '@teqfw/log/bootstrap'; console.log(typeof createBootstrap);"], consumerDir);
         assert.equal(importStdout.trim(), 'function');
 
-        await run(process.execPath, [TSC_BIN, '-p', 'tsconfig.json'], consumerDir);
+        let privateImportError;
+        await assert.rejects(
+            () => run('node', ['--input-type=module', '-e', "import '@teqfw/log/src/Logger.mjs';"], consumerDir),
+            (error) => {
+                privateImportError = error;
+                return true;
+            }
+        );
+        assert.match(privateImportError.stderr, /Package subpath '.\/src\/Logger\.mjs' is not defined/);
+
+        try {
+            await run(process.execPath, [TSC_BIN, '-p', 'tsconfig.json'], consumerDir);
+        } catch (error) {
+            throw new Error(`${error.stdout}${error.stderr}`, {cause: error});
+        }
     });
 });
