@@ -31,11 +31,9 @@ The package defines a deliberately small logging surface:
 
 The package does not define transports, sinks, routing policies, batching, or logging configuration DSLs.
 
-## Composition Root Bootstrap
+## Host Composition Root
 
-`@teqfw/log/bootstrap` is the only public construction API. `createBootstrap()` returns a ready `provider` and a safe `shutdown()` function. Its default writer is the reference console writer.
-
-Composition Roots may supply an ordered `writers` array. Every writer receives a record in declaration order. Optional cleanup hooks run in reverse declaration order. A writer exception is contained and reported through guarded stderr; it never invokes a logger recursively or replaces an application error.
+`@teqfw/log` does not construct a logging provider outside DI. The host application owns Container setup, writer selection, lifecycle, and shutdown policy. Package and application modules receive `TeqFw_Log_Provider` through DI or another host-owned assembly boundary.
 
 Internal `src/**` modules, including the logger, level map, record factory, and writer implementations, are not public import APIs.
 

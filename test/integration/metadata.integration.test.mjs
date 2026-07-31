@@ -9,13 +9,12 @@ import PackageRegistry from '@teqfw/di/node/registry/package';
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 
 describe('Distributed TeqFW metadata', () => {
-    it('publishes the DI namespace and logging bootstrap through their owned protocol paths', async () => {
+    it('publishes only the DI-owned namespace declaration', async () => {
         const manifest = JSON.parse(await fs.readFile(path.join(ROOT, 'package.json'), 'utf8'));
 
         assert.deepEqual(manifest.teqfw.fw.di.namespace, {
             prefix: 'TeqFw_Log_', path: './src', ext: '.mjs',
         });
-        assert.deepEqual(manifest.teqfw.fw.log, {bootstrap: '@teqfw/log/bootstrap'});
         assert.equal('namespaces' in manifest.teqfw, false);
     });
 

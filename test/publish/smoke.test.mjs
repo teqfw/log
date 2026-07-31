@@ -22,7 +22,7 @@ async function run(cmd, args, cwd) {
 }
 
 describe('Publish smoke', () => {
-    it('installs packed tarball, exposes only supported APIs, and type-checks bootstrap consumers', async () => {
+    it('installs packed tarball, exposes only the DI component, and type-checks consumers', async () => {
         const tmpRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'teqfw-log-publish-'));
         const packDir = path.join(tmpRoot, 'pack');
         const consumerDir = path.join(tmpRoot, 'consumer');
@@ -36,6 +36,7 @@ describe('Publish smoke', () => {
         const tarballPath = path.join(packDir, tarballName);
         const packedPaths = packed.at(0)?.files?.map((file) => file.path) ?? [];
         assert.ok(packedPaths.includes('skills/teqfw-log/SKILL.md'));
+        assert.equal(packedPaths.includes('bootstrap.d.ts'), false);
         assert.equal(packedPaths.some((file) => file.startsWith('ai/')), false);
 
         await fs.writeFile(path.join(consumerDir, 'package.json'), JSON.stringify({
@@ -60,16 +61,16 @@ describe('Publish smoke', () => {
         }, null, 2));
 
         await fs.writeFile(path.join(consumerDir, 'index.ts'), [
-            "import {createBootstrap, type TeqFw_Log_Record} from '@teqfw/log/bootstrap';",
+            "import Provider, {type TeqFw_Log_Provider$} from '@teqfw/log';",
             '',
-            'const bootstrap = await createBootstrap({writers: [{write(_record: TeqFw_Log_Record) {}}]});',
-            "const logger = bootstrap.provider.forSource('App_User_Service');",
+            'declare const provider: TeqFw_Log_Provider$;',
+            "const logger = provider.forSource('App_User_Service');",
             "logger.info('ok');",
-            'bootstrap.shutdown();',
+            'void Provider;',
             '',
         ].join('\n'));
 
-        const {stdout: importStdout} = await run('node', ['--input-type=module', '-e', "import {createBootstrap} from '@teqfw/log/bootstrap'; console.log(typeof createBootstrap);"], consumerDir);
+        const {stdout: importStdout} = await run('node', ['--input-type=module', '-e', "import Provider from '@teqfw/log'; console.log(typeof Provider);"], consumerDir);
         assert.equal(importStdout.trim(), 'function');
 
         let privateImportError;
@@ -81,6 +82,11 @@ describe('Publish smoke', () => {
             }
         );
         assert.match(privateImportError.stderr, /Package subpath '.\/src\/Logger\.mjs' is not defined/);
+
+        await assert.rejects(
+            () => run('node', ['--input-type=module', '-e', "import '@teqfw/log/bootstrap';"], consumerDir),
+            (error) => /Package subpath '.\/bootstrap' is not defined/.test(error.stderr)
+        );
 
         try {
             await run(process.execPath, [TSC_BIN, '-p', 'tsconfig.json'], consumerDir);

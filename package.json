@@ -27,7 +27,6 @@
     "CHANGELOG.md",
     "jsconfig.json",
     "README.md",
-    "bootstrap.d.ts",
     "types.d.ts"
   ],
   "exports": {
@@ -35,11 +34,6 @@
       "types": "./types.d.ts",
       "import": "./src/Provider.mjs",
       "default": "./src/Provider.mjs"
-    },
-    "./bootstrap": {
-      "types": "./bootstrap.d.ts",
-      "import": "./src/Bootstrap.mjs",
-      "default": "./src/Bootstrap.mjs"
     }
   },
   "types": "types.d.ts",
@@ -52,9 +46,6 @@
           "path": "./src",
           "ext": ".mjs"
         }
-      },
-      "log": {
-        "bootstrap": "@teqfw/log/bootstrap"
       }
     }
   },
@@ -69,7 +60,7 @@
     "test": "npm run test:unit && npm run test:integration && npm run test:publish"
   },
   "dependencies": {
-    "@teqfw/di": "git+https://github.com/teqfw/di.git#67a54a0889749ff2f052ae2baf67790125c6ba65"
+    "@teqfw/di": ">=2.8.0"
   },
   "engines": {
     "node": ">=20"

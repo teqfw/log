@@ -2,21 +2,9 @@
 
 Version: 20260709
 
-## Composition Root Usage
+## Host Composition Root
 
-```js
-import {createBootstrap} from '@teqfw/log/bootstrap';
-
-const logging = await createBootstrap();
-
-try {
-    // configure the Container and run the application
-} finally {
-    logging.shutdown();
-}
-```
-
-Do not construct a provider by importing `src/**` modules. For custom Composition Root writers, pass `{writers: [writerA, writerB]}` to `createBootstrap()`. Writers receive records in declaration order and close in reverse order.
+The host application configures its Container and supplies logging policy. Do not construct a provider by importing `src/**` modules, and do not treat this package as a host bootstrap library.
 
 ## Canonical DI Usage
 

@@ -1,88 +1,93 @@
 # @teqfw/log
 
-`@teqfw/log` is the base logging contract package for the TeqFW platform.
+**A small logging contract for TeqFW applications that keeps packages independent of a logging backend.**
 
-It provides a small, stable logging surface for TeqFW packages without coupling application code to a specific logging backend.
+`@teqfw/log` gives a Tequila Framework package one stable way to emit useful records while leaving transport, storage, telemetry, and runtime policy to the host application. A package receives a provider, binds it once to its TeqFW component address, and logs a readable message with structured data.
 
-The package is intended for source-bound structured logging in TeqFW codebases. A package or service receives one root provider, binds it to a stable component source, and then emits records with a human-readable message plus machine-readable metadata.
+## Why use it
 
-## What This Package Includes
+Without a common contract, packages either import a concrete logger or invent incompatible local APIs:
 
-- source-bound logger contract for TeqFW packages;
-- fixed log levels: `trace`, `debug`, `info`, `warn`, `error`, `fatal`;
-- structured records based on `message + data`;
-- reserved data fields for errors and tracing;
-- a reference console writer for browser and Node.js environments;
-- integration with [`@teqfw/di`](https://github.com/teqfw/di) as the default dependency-injection foundation.
-
-## What This Package Is For
-
-- giving TeqFW packages a shared logging contract;
-- binding loggers to stable component-style sources such as `App_User_Service`;
-- emitting structured metadata through `data` instead of formatting everything into strings;
-- keeping the logging entrypoint small enough to replace or extend the actual sink later.
-
-## Public npm API
-
-The published npm package exposes two supported entrypoints:
-
-```js
-import TeqFw_Log_Provider from '@teqfw/log';
-import {createBootstrap} from '@teqfw/log/bootstrap';
+```text
+package → logging backend → runtime policy
 ```
 
-`@teqfw/log` is the DI component entrypoint. Applications normally let a configured Container resolve `TeqFw_Log_Provider$`; package code receives that provider and calls `forSource(source)`.
+`@teqfw/log` preserves the package boundary:
 
-`@teqfw/log/bootstrap` is the Composition Root API. It creates a ready provider without importing `Logger`, `Level`, record factories, or writers from package internals:
-
-```js
-import {createBootstrap} from '@teqfw/log/bootstrap';
-
-const logging = await createBootstrap();
-const provider = logging.provider;
-
-try {
-    // configure and run the application
-} finally {
-    logging.shutdown();
-}
+```text
+package → logging contract → host-selected writers
 ```
 
-Pass `{writers: [writerA, writerB]}` only when a Composition Root owns custom writers. Each writer must expose `write(record)`. Records are offered in array order; optional `shutdown()` or `close()` hooks run in reverse order. Writer failures are contained, reported best-effort to guarded stderr, and never replace the application's primary error.
+That enables:
 
-The manifest uses distributed metadata: `teqfw.fw.di.namespace` is the DI-owned namespace declaration, and `teqfw.fw.log.bootstrap` is the minimal logging-owned pre-Container declaration. `teqfw.namespaces` is not supported.
+- a backend-neutral logging surface for TeqFW packages;
+- source-bound records that identify the responsible component;
+- fixed levels: `trace`, `debug`, `info`, `warn`, `error`, and `fatal`;
+- structured `message + data` records, including `data.err` for caught errors;
+- a browser- and Node.js-compatible console reference writer;
+- composition-root control over optional custom writers and their shutdown.
+
+## Quick start
+
+Application components receive the provider through TeqFW DI, bind a stable source once, and reuse the returned logger:
 
 ```js
 export default function Service({logger}) {
-    const log = logger.forSource('App_User_Service');
+  const log = logger.forSource('App_User_Service');
 
-    return {
-        async load(userId) {
-            log.info('User profile loaded', {userId});
-        },
-    };
+  return {
+    async load(userId) {
+      log.info('User profile loaded', {userId});
+    },
+  };
 }
 
 export const __deps__ = {
-    default: {
-        logger: 'TeqFw_Log_Provider$',
-    },
+  default: {
+    logger: 'TeqFw_Log_Provider$',
+  },
 };
 ```
 
-## Design Basis
+## Public API
 
-`@teqfw/log` is built on top of [`@teqfw/di`](https://github.com/teqfw/di), the dependency-injection package used by TeqFW.
+- `@teqfw/log` — the `TeqFw_Log_Provider` DI component and its public TypeScript-facing contract types.
 
-The package is also developed using ADSM, Alex Gusev's approach to maintaining product and architecture context alongside implementation work. Background materials:
+Do not import `@teqfw/log/src/**`.
 
-- ADSM book: http://fly.wiredgeese.com/flancer/leanpub/adsm-en/
-- Alex Gusev: https://wiredgeese.com/
+## Agent-ready package
 
-ADSM and TeqFW are original developments by Alex Gusev.
+The package ships with a version-matched Agent Skill in `skills/teqfw-log`. It explains the supported entrypoint, source binding, records, and package boundaries. Mount it into a host project when an agent needs implementation detail:
 
-## Notes For Consumers
+```sh
+mkdir -p .agents/skills
+cd .agents/skills
+ln -s ../../node_modules/@teqfw/log/skills/teqfw-log
+```
 
-- The distributable package includes the `skills/teqfw-log` skill for agent-facing usage and API guidance.
-- The repository may contain additional cognitive context in `ctx/`, but that repository branch is not part of the npm package.
-- Internal `src/**` modules are intentionally not npm import entrypoints; use only the export-map paths above.
+The package uses [`@teqfw/di`](https://www.npmjs.com/package/@teqfw/di) for composition. Its installed `teqfw-di` skill documents the DI API. Host instructions and architecture remain authoritative.
+
+## Best fit
+
+Use `@teqfw/log` when TeqFW modules need a durable shared logging contract but the application must retain control over logging infrastructure.
+
+Use a full logging framework directly when an application has no need for a package-level contract or replaceable backend policy.
+
+## Add to a project
+
+```sh
+npm install @teqfw/log
+```
+
+## Boundaries
+
+This package is a contract layer with a reference console writer. It does not create a host application's composition root and does not provide transport registries, persistence, configuration DSLs, telemetry integration, or enterprise logging policy.
+
+## Development and Ecosystem
+
+This product is developed by AI agents under the direction of Alex Gusev, following the Agent-Driven Software Management (ADSM) methodology. It is built for the Tequila Framework (TeqFW) platform and contributes to its ecosystem.
+
+- [Tequila Framework](https://teqfw.com/?teqfw-log)
+- [Alex Gusev's Personal Website](https://wiredgeese.com/?teqfw-log)
+- [Alex Gusev's Telegram Channel](https://t.me/alexgusev_lab_en)
+- [Agent-Driven Software Management: A Practical Guide](http://fly.wiredgeese.com/flancer/leanpub/adsm-en/?teqfw-log)

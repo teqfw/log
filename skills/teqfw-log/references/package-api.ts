@@ -56,35 +56,8 @@ export interface PackageApiContract {
 export const PACKAGE_API: PackageApiContract = {
     packageName: '@teqfw/log',
     packageRole: 'Minimal TeqFW logging contract with a DI root provider, source-bound logger, immutable log records, and a reference console writer.',
-    canonicalEntrypoints: [
-        '@teqfw/log',
-        '@teqfw/log/bootstrap',
-    ],
+    canonicalEntrypoints: ['@teqfw/log'],
     publicRuntime: [
-        {
-            alias: 'TeqFw_Log_Bootstrap',
-            kind: 'callable',
-            role: 'Public Composition Root constructor for a ready provider and safe writer shutdown.',
-            imports: [
-                {
-                    specifier: '@teqfw/log/bootstrap',
-                    exportName: 'createBootstrap',
-                    canonical: true,
-                },
-            ],
-            methods: [
-                {
-                    name: 'createBootstrap',
-                    signature: 'createBootstrap(options?: {writers?: readonly Writer[]}): Promise<{provider: TeqFw_Log_Provider$, shutdown(): void}>',
-                    summary: 'Creates the reference console provider or aggregates supplied writers.',
-                    constraints: [
-                        'Writers receive records in declaration order.',
-                        'Optional shutdown() or close() hooks run in reverse declaration order.',
-                        'Writer failures are contained and only reported through guarded stderr.',
-                    ],
-                },
-            ],
-        },
         {
             alias: 'TeqFw_Log_Provider',
             kind: 'factory',
@@ -117,7 +90,7 @@ export const PACKAGE_API: PackageApiContract = {
             summary: 'Public root dependency that returns source-bound loggers for stable component sources.',
             notes: [
                 'This DI component entrypoint is supported for Container configuration and provider injection.',
-                'Composition Roots construct a ready provider through @teqfw/log/bootstrap instead of internal modules.',
+                'The host application owns Container configuration and provider lifecycle.',
             ],
         },
         {
@@ -171,7 +144,7 @@ export const PACKAGE_API: PackageApiContract = {
     operationalNotes: [
         'Package code should usually depend on TeqFw_Log_Provider rather than construct loggers directly.',
         'Bind one stable source once and reuse the returned logger.',
-        'The npm package exposes @teqfw/log for the DI provider and @teqfw/log/bootstrap for Composition Root construction; package-internal source files are not supported public APIs.',
+        'The npm package exposes only @teqfw/log; package-internal source files are not supported public APIs.',
         'Behavior not documented in this file or the companion skill references should be treated as unsupported.',
     ],
 };

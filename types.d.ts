@@ -27,15 +27,10 @@ export interface TeqFw_Log_Provider$ {
 }
 
 /**
- * DI component constructor. Applications normally receive the instance from a
- * configured Container; Composition Roots use @teqfw/log/bootstrap instead.
+ * DI component constructor. A host application configures it in its Container.
  */
 export interface TeqFw_Log_Provider {
   new (dependencies: unknown): TeqFw_Log_Provider$;
-}
-
-export interface TeqFw_Log_Bootstrap_Options {
-  writers?: readonly TeqFw_Log_Writer$[];
 }
 
 declare const Provider: TeqFw_Log_Provider;
@@ -50,7 +45,5 @@ declare global {
   type TeqFw_Log_Logger$ = import('./types.d.ts').TeqFw_Log_Logger;
   type TeqFw_Log_Record_Factory$ = Readonly<{create(record: Omit<TeqFw_Log_Record, 'time'> & {time?: Date | string | number}): TeqFw_Log_Record}>;
   type TeqFw_Log_Console_Writer$ = Readonly<{write(record: TeqFw_Log_Record): void}>;
-  type TeqFw_Log_Writer$ = Readonly<{write(record: TeqFw_Log_Record): void, shutdown?: () => void, close?: () => void}>;
-  type TeqFw_Log_Bootstrap_Result = import('./bootstrap.d.ts').BootstrapResult;
-  type TeqFw_Log_Bootstrap_Options = import('./types.d.ts').TeqFw_Log_Bootstrap_Options;
+  type TeqFw_Log_Writer$ = Readonly<{write(record: TeqFw_Log_Record): void}>;
 }
