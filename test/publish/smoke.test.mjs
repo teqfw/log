@@ -34,6 +34,9 @@ describe('Publish smoke', () => {
         const tarballName = packed.at(0)?.filename;
         assert.equal(typeof tarballName, 'string');
         const tarballPath = path.join(packDir, tarballName);
+        const packedPaths = packed.at(0)?.files?.map((file) => file.path) ?? [];
+        assert.ok(packedPaths.includes('skills/teqfw-log/SKILL.md'));
+        assert.equal(packedPaths.some((file) => file.startsWith('ai/')), false);
 
         await fs.writeFile(path.join(consumerDir, 'package.json'), JSON.stringify({
             name: 'teqfw-log-publish-smoke',

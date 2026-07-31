@@ -83,6 +83,6 @@ ADSM and TeqFW are original developments by Alex Gusev.
 
 ## Notes For Consumers
 
-- The distributable package includes `ai/` documents for agent-facing usage and API guidance.
+- The distributable package includes the `skills/teqfw-log` skill for agent-facing usage and API guidance.
 - The repository may contain additional cognitive context in `ctx/`, but that repository branch is not part of the npm package.
 - Internal `src/**` modules are intentionally not npm import entrypoints; use only the export-map paths above.

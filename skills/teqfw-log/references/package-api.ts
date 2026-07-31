@@ -172,6 +172,6 @@ export const PACKAGE_API: PackageApiContract = {
         'Package code should usually depend on TeqFw_Log_Provider rather than construct loggers directly.',
         'Bind one stable source once and reuse the returned logger.',
         'The npm package exposes @teqfw/log for the DI provider and @teqfw/log/bootstrap for Composition Root construction; package-internal source files are not supported public APIs.',
-        'Behavior not documented in this file or the companion ai/*.md documents should be treated as unsupported.',
+        'Behavior not documented in this file or the companion skill references should be treated as unsupported.',
     ],
 };

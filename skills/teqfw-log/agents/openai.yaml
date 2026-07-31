@@ -1,0 +1,4 @@
+interface:
+  display_name: "TeqFW Log"
+  short_description: "Integrate @teqfw/log safely"
+  default_prompt: "Use $teqfw-log to integrate @teqfw/log in this project."
