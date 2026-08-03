@@ -3,7 +3,7 @@
 ## [Unreleased]
 
 ### Changed
-- Migrated package metadata from `teqfw.namespaces` to `teqfw.fw.di.namespace`.
+- Migrated package metadata from `teqfw.namespaces` to `teqfw.fw.di.namespaces`.
 - Replaced the obsolete distributable `ai/` documentation with `skills/teqfw-log`.
 
 ### Removed

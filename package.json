@@ -41,11 +41,13 @@
   "teqfw": {
     "fw": {
       "di": {
-        "namespace": {
-          "prefix": "TeqFw_Log_",
-          "path": "./src",
-          "ext": ".mjs"
-        }
+        "namespaces": [
+          {
+            "prefix": "TeqFw_Log_",
+            "path": "./src",
+            "ext": ".mjs"
+          }
+        ]
       }
     }
   },
