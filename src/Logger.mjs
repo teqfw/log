@@ -49,8 +49,8 @@ export default class Logger {
     /**
      * @param {object} deps
      * @param {TeqFw_Log_Enum_Level} deps.levels
-     * @param {TeqFw_Log_Record_Factory$} deps.recordFactory
-     * @param {TeqFw_Log_Writer$} deps.writer
+     * @param {TeqFw_Log_Record_Factory} deps.recordFactory
+     * @param {TeqFw_Log_Writer} deps.writer
      * @param {string} deps.source
      */
     constructor({levels, recordFactory, writer, source}) {
@@ -106,7 +106,7 @@ export default class Logger {
         /**
          * @param {TeqFw_Log_Level} level
          * @param {string} message
-         * @param {TeqFw_Log_Data} data
+         * @param {TeqFw_Log_Data=} data
          * @returns {void}
          */
         this.log = function (level, message, data) {
@@ -121,7 +121,7 @@ export default class Logger {
 
         /**
          * @param {string} message
-         * @param {TeqFw_Log_Data} data
+         * @param {TeqFw_Log_Data=} data
          * @returns {void}
          */
         this.trace = function (message, data) {
@@ -130,7 +130,7 @@ export default class Logger {
 
         /**
          * @param {string} message
-         * @param {TeqFw_Log_Data} data
+         * @param {TeqFw_Log_Data=} data
          * @returns {void}
          */
         this.debug = function (message, data) {
@@ -139,7 +139,7 @@ export default class Logger {
 
         /**
          * @param {string} message
-         * @param {TeqFw_Log_Data} data
+         * @param {TeqFw_Log_Data=} data
          * @returns {void}
          */
         this.info = function (message, data) {
@@ -148,7 +148,7 @@ export default class Logger {
 
         /**
          * @param {string} message
-         * @param {TeqFw_Log_Data} data
+         * @param {TeqFw_Log_Data=} data
          * @returns {void}
          */
         this.warn = function (message, data) {
@@ -157,7 +157,7 @@ export default class Logger {
 
         /**
          * @param {string} message
-         * @param {TeqFw_Log_Data} data
+         * @param {TeqFw_Log_Data=} data
          * @returns {void}
          */
         this.error = function (message, data) {
@@ -166,7 +166,7 @@ export default class Logger {
 
         /**
          * @param {string} message
-         * @param {TeqFw_Log_Data} data
+         * @param {TeqFw_Log_Data=} data
          * @returns {void}
          */
         this.fatal = function (message, data) {

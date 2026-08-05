@@ -6,9 +6,16 @@
     "moduleResolution": "nodenext",
     "noEmit": true,
     "skipLibCheck": true,
+    "strict": true,
     "target": "ESNext",
     "types": ["node"]
   },
-  "include": ["src", "test", "types.d.ts"],
-  "exclude": ["dist", "node_modules"]
+  "include": [
+    "src",
+    "test",
+    "types.d.ts",
+    "node_modules/@teqfw/*/src",
+    "node_modules/@teqfw/*/types.d.ts"
+  ],
+  "exclude": ["dist"]
 }

@@ -25,15 +25,12 @@
     "LICENSE",
     "src/",
     "CHANGELOG.md",
-    "jsconfig.json",
     "README.md",
     "types.d.ts"
   ],
   "exports": {
     ".": {
-      "types": "./types.d.ts",
-      "import": "./src/Provider.mjs",
-      "default": "./src/Provider.mjs"
+      "types": "./types.d.ts"
     }
   },
   "types": "types.d.ts",
@@ -59,10 +56,12 @@
     "test:unit": "find test/unit -name '*.test.mjs' -print0 | xargs -0 node --test",
     "test:integration": "find test/integration -name '*.test.mjs' -print0 | xargs -0 node --test",
     "test:publish": "node --test test/publish/smoke.test.mjs",
-    "test": "npm run test:unit && npm run test:integration && npm run test:publish"
+    "test": "npm run test:unit && npm run test:integration && npm run test:publish",
+    "typecheck": "tsc -p jsconfig.json",
+    "lint:md": "markdownlint-cli2 \"skills/**/*.md\" \"*.md\""
   },
   "dependencies": {
-    "@teqfw/di": ">=2.8.0"
+    "@teqfw/di": "github:teqfw/di#main"
   },
   "engines": {
     "node": ">=20"
@@ -73,6 +72,8 @@
   },
   "devDependencies": {
     "@types/node": "^26.1.1",
-    "typescript": "^7.0.2"
+    "markdownlint-cli2": "^0.23.2",
+    "typescript": "^5.9.3",
+    "typescript-language-server": "^5.3.0"
   }
 }

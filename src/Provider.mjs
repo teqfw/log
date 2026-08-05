@@ -8,21 +8,21 @@
 export default class Provider {
     /**
      * @param {object} deps
-     * @param {object} deps.levels
-     * @param {TeqFw_Log_Logger} deps.loggerModule
-     * @param {TeqFw_Log_Record_Factory$} deps.recordFactory
-     * @param {TeqFw_Log_Writer$} deps.writer
+     * @param {TeqFw_Log_Enum_Level} deps.levels
+     * @param {TeqFw_Log_Logger__Class} deps.loggerModule
+     * @param {TeqFw_Log_Record_Factory} deps.recordFactory
+     * @param {TeqFw_Log_Writer} deps.writer
      */
     constructor({levels, loggerModule, recordFactory, writer}) {
-        this.levels = levels.default;
+        this.levels = levels;
         this.loggerModule = loggerModule;
         this.recordFactory = recordFactory;
         this.writer = writer;
-        /** @type {Map<string, TeqFw_Log_Logger$>} */
+        /** @type {Map<string, TeqFw_Log_Logger>} */
         this.cache = new Map();
         /**
          * @param {string} source
-         * @returns {TeqFw_Log_Logger$}
+         * @returns {TeqFw_Log_Logger}
          */
         this.forSource = function (source) {
             const existing = this.cache.get(source);
@@ -43,7 +43,7 @@ export default class Provider {
 
 export const __deps__ = Object.freeze({
     default: Object.freeze({
-        levels: 'TeqFw_Log_Enum_Level',
+        levels: 'TeqFw_Log_Enum_Level__default',
         loggerModule: 'TeqFw_Log_Logger__default',
         recordFactory: 'TeqFw_Log_Record_Factory$',
         writer: 'TeqFw_Log_Console_Writer$',

@@ -5,6 +5,11 @@
  * @description Fixed log level definitions for the TeqFW logging contract.
  */
 
+/**
+ * Fixed log level definitions for the TeqFW logging contract.
+ *
+ * @type {{TRACE: 'trace', DEBUG: 'debug', INFO: 'info', WARN: 'warn', ERROR: 'error', FATAL: 'fatal'}}
+ */
 const TeqFw_Log_Enum_Level = {
     TRACE: 'trace',
     DEBUG: 'debug',

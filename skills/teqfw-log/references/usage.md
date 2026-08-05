@@ -9,8 +9,6 @@ The host application configures its Container and supplies logging policy. Do no
 ## Canonical DI Usage
 
 ```js
-import TeqFw_Log_Provider from '@teqfw/log';
-
 export default function Service({logger}) {
     const log = logger.forSource('App_User_Service');
 

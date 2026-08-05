@@ -5,17 +5,20 @@ import TeqFw_Log_Console_Writer from '../../../src/Console/Writer.mjs';
 
 describe('TeqFw_Log_Console_Writer', () => {
     const originalConsole = globalThis.console;
+    /** @type {{method: string, args: any[]}[]} */
     const calls = [];
 
     beforeEach(() => {
         calls.length = 0;
-        globalThis.console = {
+        /** @type {Record<string, (...args: any[]) => void>} */
+        const mock = {
             debug: (...args) => calls.push({method: 'debug', args}),
             info: (...args) => calls.push({method: 'info', args}),
             warn: (...args) => calls.push({method: 'warn', args}),
             error: (...args) => calls.push({method: 'error', args}),
             log: (...args) => calls.push({method: 'log', args}),
         };
+        globalThis.console = /** @type {any} */ (mock);
     });
 
     afterEach(() => {
@@ -39,6 +42,7 @@ describe('TeqFw_Log_Console_Writer', () => {
 
     it('preserves error details in data.err', () => {
         const writer = new TeqFw_Log_Console_Writer();
+        /** @type {Error & {code?: string}} */
         const err = new Error('broken');
         err.code = 'E_TEST';
         writer.write({

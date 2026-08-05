@@ -6,7 +6,9 @@ import TeqFw_Log_Logger from '../../../src/Logger.mjs';
 import TeqFw_Log_Record_Factory from '../../../src/Record/Factory.mjs';
 
 describe('TeqFw_Log_Logger', () => {
+    /** @type {TeqFw_Log_Record[]} */
     const calls = [];
+    /** @type {TeqFw_Log_Writer} */
     const writer = {write: (record) => calls.push(record)};
     const recordFactory = new TeqFw_Log_Record_Factory();
 
