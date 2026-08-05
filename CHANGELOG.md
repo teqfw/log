@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [2.0.0] - 2026-08-05
 
 ### Added
 
@@ -8,12 +8,14 @@
 - Added `typescript-language-server` and `markdownlint-cli2` to the development dependencies.
 - Added `.markdownlint.json` with the root Markdown linting rules.
 - Added `.opencode/opencode.json` enabling LSP for the opencode agent.
+- Added `jsconfig.json` to `package.json#files` so the distributed package includes the TypeScript configuration used by consumers and agents.
 
 ### Changed
 
 - Migrated package metadata from `teqfw.namespaces` to `teqfw.fw.di.namespaces`.
-- Pinned the `@teqfw/di` runtime dependency to `github:teqfw/di#main`.
+- Switched the `@teqfw/di` runtime dependency from the GitHub branch alias to the npm registry range `>=2.9.0`.
 - Aligned `jsconfig.json` with the `@teqfw/di` baseline: enabled `strict`, mirrored the `@teqfw/di` module resolution, and pointed the TypeScript server at the installed dependency sources and type files (`node_modules/@teqfw/*/src` + `node_modules/@teqfw/*/types.d.ts`) so JSDoc annotations across the dependency tree resolve to real types.
+- Reworked `README.md` to the TeqFW promotion pattern: npm and jsDelivr usage badges, the "Human-governed. Agent-built. Agent-ready." positioning, and the closing Agent-Driven Development section with the version-matched skill-mount command.
 - Replaced the obsolete distributable `ai/` documentation with `skills/teqfw-log`.
 - Aligned `types.d.ts` global type aliases with the JSDoc annotations used by `src/**` and the record contract (optional `time`).
 - Reworked `types.d.ts` to the validator-compatible type map: `declare global` aliases that import real types from `src/**` (per the `teqfw-platform` cross-package type-linking convention), no `$` lifecycle markers in static aliases, sorted identifiers, and a trailing `export {};`. Renamed the public type exports accordingly (`TeqFw_Log_Provider$` → `TeqFw_Log_Provider` plus `TeqFw_Log_Provider__Class`, `TeqFw_Log_Writer$` → `TeqFw_Log_Writer`, `TeqFw_Log_Record_Factory$` → `TeqFw_Log_Record_Factory`).

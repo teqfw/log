@@ -1,18 +1,23 @@
 # @teqfw/log
 
-**A small logging contract for TeqFW applications that keeps packages independent of a logging backend.**
+![npms.io](https://img.shields.io/npm/dm/@teqfw/log)
+![jsdelivr](https://img.shields.io/jsdelivr/npm/hm/@teqfw/log)
 
-`@teqfw/log` gives a Tequila Framework package one stable way to emit useful records while leaving transport, storage, telemetry, and runtime policy to the host application. A package receives a provider, binds it once to its TeqFW component address, and logs a readable message with structured data.
+> **Human-governed. Agent-built. Agent-ready.**
+
+`@teqfw/log` gives TeqFW packages one stable way to emit useful log records without coupling to a concrete logging backend. It is a foundational package of the Tequila Framework (TeqFW): created and evolved by coding agents under the architectural direction and final responsibility of Alex Gusev, and shipped with a version-matched Agent Skill so other agents can understand, integrate, and use it correctly.
 
 ## Why use it
 
-Without a common contract, packages either import a concrete logger or invent incompatible local APIs:
+> **A logging contract lets packages log without binding the application to a logging backend.**
+
+Without a common contract, packages either import a concrete logger or invent incompatible local APIs, coupling message emission to a specific runtime policy:
 
 ```text
 package → logging backend → runtime policy
 ```
 
-`@teqfw/log` preserves the package boundary:
+`@teqfw/log` keeps the package boundary intact:
 
 ```text
 package → logging contract → host-selected writers
@@ -57,15 +62,15 @@ Do not import `@teqfw/log/src/**`.
 
 ## Agent-ready package
 
-The package ships with a version-matched Agent Skill in `skills/teqfw-log`. It explains the supported entrypoint, source binding, records, and package boundaries. Mount it into a host project when an agent needs implementation detail:
+The package ships with three aligned interfaces:
 
-```sh
-mkdir -p .agents/skills
-cd .agents/skills
-ln -s ../../node_modules/@teqfw/log/skills/teqfw-log
-```
+- runtime code in `src`;
+- type information through JSDoc and `types.d.ts`;
+- a version-matched Agent Skill in `skills/teqfw-log`.
 
-The package uses [`@teqfw/di`](https://www.npmjs.com/package/@teqfw/di) for composition. Its installed `teqfw-di` skill documents the DI API. Host instructions and architecture remain authoritative.
+The skill explains the logging contract, source binding, records, and package boundaries. An agent does not need to reconstruct the package architecture from source code alone.
+
+The package uses [`@teqfw/di`](https://www.npmjs.com/package/@teqfw/di) for composition. Project instructions and application architecture remain authoritative over package-level guidance.
 
 ## Best fit
 
@@ -83,11 +88,22 @@ npm install @teqfw/log
 
 This package is a contract layer with a reference console writer. It does not create a host application's composition root and does not provide transport registries, persistence, configuration DSLs, telemetry integration, or enterprise logging policy.
 
-## Development and Ecosystem
+## Agent-Driven Development
 
-This product is developed by AI agents under the direction of Alex Gusev, following the Agent-Driven Software Management (ADSM) methodology. It is built for the Tequila Framework (TeqFW) platform and contributes to its ecosystem.
+TeqFW is built through the same development model that it is designed to enable: one human defines the intent, architecture, constraints, and acceptance criteria; coding agents implement and maintain the products; other agents use those products in different combinations to create applications.
 
-- [Tequila Framework](https://teqfw.com/?teqfw-log)
-- [Alex Gusev's Personal Website](https://wiredgeese.com/?teqfw-log)
-- [Alex Gusev's Telegram Channel](https://t.me/alexgusev_lab_en)
-- [Agent-Driven Software Management: A Practical Guide](http://fly.wiredgeese.com/flancer/leanpub/adsm-en/?teqfw-log)
+`@teqfw/log` is a foundational package of TeqFW. The package includes a version-matched Agent Skill in `skills/teqfw-log`. The README provides a human-facing product overview; the skill provides agents with the package concepts, contracts, integration rules, examples, and boundaries.
+
+Mount the skill into a host project:
+
+```sh
+mkdir -p .agents/skills
+ln -s ../../node_modules/@teqfw/log/skills/teqfw-log \
+  .agents/skills/teqfw-log
+```
+
+Each TeqFW package is both a practical software component and a working demonstration of human-governed, agent-driven development. This work follows the Agent-Driven Software Management (ADSM) approach: human intent, architectural authority, acceptance, and responsibility remain authoritative; agents act as implementation and reasoning partners.
+
+- [Tequila Framework](https://teqfw.com/?from=github-teqfw-log)
+- [Agent-Driven Software Management: A Practical Guide](http://fly.wiredgeese.com/flancer/leanpub/adsm-en/?from=github-teqfw-log)
+- [Alex Gusev](https://github.com/flancer64)
