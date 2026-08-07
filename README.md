@@ -5,7 +5,7 @@
 
 > **Human-governed. Agent-built. Agent-ready.**
 
-`@teqfw/log` gives TeqFW packages one stable way to emit useful log records without coupling to a concrete logging backend. It is a foundational package of the Tequila Framework (TeqFW): created and evolved by coding agents under the architectural direction and final responsibility of [Alex Gusev](https://github.com/flancer64), and shipped with a version-matched Agent Skill so other agents can understand, integrate, and use it correctly.
+`@teqfw/log` gives TeqFW packages one stable way to emit useful log records without coupling to a concrete logging backend. It is a foundational package of the Tequila Framework ([TeqFW](https://teqfw.com/)): created and evolved by coding agents under the architectural direction and final responsibility of [Alex Gusev](https://github.com/flancer64), and shipped with a version-matched Agent Skill so other agents can understand, integrate, and use it correctly.
 
 ## Why use it
 
