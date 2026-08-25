@@ -1,6 +1,6 @@
 {
   "name": "@teqfw/log",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "Base logging contract package for the TeqFW platform.",
   "keywords": [
     "log",

@@ -1,6 +1,6 @@
 # concepts.md
 
-Version: 20260709
+Version: 20260825
 
 ## Root Dependency
 

@@ -1,5 +1,15 @@
 # Changelog
 
+## [2.1.1] - 2026-08-25
+
+### Added
+
+- Added local timestamps to reference console output in `YYYYMMDD-HHMMSS.MMM(+HH:MM)` form, including milliseconds and the UTC offset.
+
+### Changed
+
+- Documented the Console Writer timestamp format in the project context and agent skill.
+
 ## [2.1.0] - 2026-08-25
 
 ### Added
