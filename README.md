@@ -63,7 +63,13 @@ Do not import `@teqfw/log/src/**`.
 
 ## Runtime logging policy
 
-Every provider shares one `TeqFw_Log_Policy$`. The default `*=info` writes `info` and more severe events to the built-in console writer. A policy rule is an exact source or a trailing namespace prefix; the longest match wins:
+Each Provider shares one `TeqFw_Log_Policy$` with all of its bound loggers. The default `*=info` writes `info` and more severe events to the built-in console writer. A rule level is a threshold: it enables that level and all more severe levels. Rules must include the `*` default and may be only:
+
+- `*` — the default rule;
+- an exact TeqFW source such as `App_Import_Run`;
+- a namespace prefix with one trailing `*`, such as `App_Import_*`.
+
+The longest literal match wins:
 
 ```text
 *=info
@@ -71,7 +77,53 @@ TeqFw_Db_*=debug
 App_Import_*=trace
 ```
 
-Use `TeqFw_Log_Policy_Factory$` to create a policy from programmatic rules, or the shared DI Policy component to replace or change live rules; loggers that already exist see the update immediately. `Logger.isEnabled(level)` and actual output consult the same policy. `TeqFw_Log_Policy_File$` explicitly applies a file with the format above; blank lines and `#` comments are allowed. Invalid syntax, patterns, or levels fail without changing the active policy. log itself never searches for configuration files.
+Inject the shared Policy into a host configuration component and change it explicitly:
+
+```js
+export default function LogPolicyConfig({policy}) {
+  return {
+    configure() {
+      policy.setRules({
+        '*': 'info',
+        'TeqFw_Db_*': 'debug',
+        'App_Import_*': 'trace',
+      });
+
+      policy.setRule('App_Import_Run', 'debug');
+    },
+  };
+}
+
+export const __deps__ = {
+  default: {
+    policy: 'TeqFw_Log_Policy$',
+  },
+};
+```
+
+`setRules()` atomically replaces the complete rule set; `setRule()` changes one rule while retaining the others. Existing loggers see updates immediately because they use the same Policy. `Logger.isEnabled(level)` and actual output always consult it.
+
+For configuration text already held by the host, call `policy.applyText(text)`. For an explicit Node.js file, inject `TeqFw_Log_Policy_File$` into a Node-only host component and call `await apply(path)`:
+
+```js
+export default function NodeLogPolicyLoader({policyFile}) {
+  return {
+    async apply() {
+      await policyFile.apply('/etc/my-app/log.policy');
+    },
+  };
+}
+
+export const __deps__ = {
+  default: {
+    policyFile: 'TeqFw_Log_Policy_File$',
+  },
+};
+```
+
+Policy files use one `pattern=level` rule per line; blank lines and lines beginning with `#` are ignored. Invalid syntax, duplicate patterns, missing default rules, invalid patterns, and invalid levels fail without changing the active rules. `@teqfw/log` never searches for configuration files.
+
+Inject `TeqFw_Log_Policy_Factory$` when a host component needs an independent Policy from programmatic rules. It does not automatically replace a Provider's shared Policy; the host decides where that independent instance is used.
 
 ## Agent-ready package
 

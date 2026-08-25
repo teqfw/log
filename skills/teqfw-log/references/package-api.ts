@@ -83,6 +83,8 @@ export const PACKAGE_API: PackageApiContract = {
             methods: [
                 {name: 'setRules', signature: 'setRules(rules: Record<string, TeqFw_Log_Level>): void', summary: 'Atomically replaces validated rules.'},
                 {name: 'setRule', signature: 'setRule(pattern: string, level: TeqFw_Log_Level): void', summary: 'Adds or changes one live rule.'},
+                {name: 'applyText', signature: 'applyText(text: string): void', summary: 'Atomically parses and applies log-owned policy-file text.'},
+                {name: 'getRules', signature: 'getRules(): Readonly<Record<string, TeqFw_Log_Level>>', summary: 'Returns the active rules as an immutable snapshot.'},
                 {name: 'isEnabled', signature: 'isEnabled(source: string, level: TeqFw_Log_Level): boolean', summary: 'Uses the most specific matching source rule.'},
             ],
         },
@@ -95,6 +97,15 @@ export const PACKAGE_API: PackageApiContract = {
                 {name: 'create', signature: 'create(rules: Record<string, TeqFw_Log_Level>): TeqFw_Log_Policy', summary: 'Validates and returns a new mutable policy.'},
             ],
         },
+        {
+            alias: 'TeqFw_Log_Policy_File',
+            kind: 'factory',
+            role: 'Node.js-only loader that reads and explicitly applies a policy file to the shared Policy.',
+            imports: [],
+            methods: [
+                {name: 'apply', signature: 'apply(path: string): Promise<void>', summary: 'Reads UTF-8 text from an explicit path and atomically applies it.'},
+            ],
+        },
     ],
     structuralContracts: [
         {
@@ -102,7 +113,12 @@ export const PACKAGE_API: PackageApiContract = {
             kind: 'protocol',
             aliases: ['TeqFw_Log_Policy', 'TeqFw_Log_Policy_File'],
             summary: 'Mutable log-owned filtering policy and explicit Node.js policy-file loader.',
-            notes: ['The default is *=info.', 'Policy files use one pattern=level rule per line; log never discovers their paths.'],
+            notes: [
+                'The default is *=info; a complete rule set must include *.',
+                'Patterns are *; exact TeqFW sources; or source prefixes ending in one *; the longest literal match wins.',
+                'Policy files use one pattern=level rule per line; log never discovers their paths.',
+                'Factory-created Policies are independent and are not automatically installed into a Provider.',
+            ],
         },
         {
             name: 'Log Provider',

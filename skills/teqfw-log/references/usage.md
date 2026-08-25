@@ -1,6 +1,6 @@
 # usage.md
 
-Version: 20260709
+Version: 20260825
 
 ## Host Composition Root
 
@@ -37,7 +37,55 @@ export const __deps__ = {
 
 ## Configure Policy At Runtime
 
-Resolve `TeqFw_Log_Policy_Factory$` and call `create({'*': 'info', 'App_Import_*': 'trace'})` for an independent programmatic Policy. Resolve the shared `TeqFw_Log_Policy$` to call `setRules(...)` or `setRule('TeqFw_Db_*', 'debug')`. Resolve `TeqFw_Log_Policy_File$` and call `apply(path)` to validate and apply an explicit policy file. Shared-policy updates are immediately used by existing loggers.
+Inject the shared `TeqFw_Log_Policy$` only into a host configuration component. Each Provider shares that Policy with its bound loggers, so changes take effect immediately for existing loggers.
+
+```js
+export default function LogPolicyConfig({policy}) {
+    return {
+        configure() {
+            policy.setRules({
+                '*': 'info',
+                'TeqFw_Db_*': 'debug',
+                'App_Import_*': 'trace',
+            });
+
+            policy.setRule('App_Import_Run', 'debug');
+        },
+    };
+}
+
+export const __deps__ = {
+    default: {
+        policy: 'TeqFw_Log_Policy$',
+    },
+};
+```
+
+`setRules(rules)` atomically replaces all rules. Its input must be a non-empty object containing the `*` default rule. Each pattern is either `*`, an exact TeqFW source, or a source-prefix ending in one `*`; each value is one of the fixed log levels. `setRule(pattern, level)` updates one rule and retains the rest.
+
+Policy levels are thresholds: a `debug` rule enables `debug`, `info`, `warn`, `error`, and `fatal`. The longest literal matching pattern wins.
+
+For policy text already loaded by the host, call `policy.applyText(text)`. The grammar is one `pattern=level` rule per line; blank lines and lines beginning with `#` are ignored. Syntax errors, duplicate patterns, missing defaults, invalid patterns, and invalid levels leave the active rules unchanged.
+
+For an explicit Node.js file, inject `TeqFw_Log_Policy_File$` into a Node-only host component and call `await apply(path)`. The component reads UTF-8 text and applies the same grammar. It never discovers paths itself:
+
+```js
+export default function NodeLogPolicyLoader({policyFile}) {
+    return {
+        async apply() {
+            await policyFile.apply('/etc/my-app/log.policy');
+        },
+    };
+}
+
+export const __deps__ = {
+    default: {
+        policyFile: 'TeqFw_Log_Policy_File$',
+    },
+};
+```
+
+Inject `TeqFw_Log_Policy_Factory$` into a host component and call `create({'*': 'info', 'App_Import_*': 'trace'})` only when an independent Policy instance is needed. It does not automatically replace the shared Policy used by an existing Provider; host composition decides where the independent instance belongs.
 
 ## Discouraged Practices
 

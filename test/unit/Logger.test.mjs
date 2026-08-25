@@ -50,4 +50,41 @@ describe('TeqFw_Log_Logger', () => {
             levels, policy, recordFactory, writer: {write: () => {}}, source: 'service',
         }), /invalid/);
     });
+
+    it('does not create or emit a record for a disabled convenience call', () => {
+        let created = 0;
+        let written = 0;
+        /** @type {any} */
+        const policy = {isEnabled: () => false};
+        /** @type {any} */
+        const recordFactory = {create: () => {
+            created += 1;
+            return Object.freeze({level: 'debug', message: 'ignored'});
+        }};
+        const logger = new Logger({
+            levels, policy, recordFactory, writer: {write: () => { written += 1; }}, source: 'App_User_Service',
+        });
+
+        logger.debug('ignored');
+
+        assert.equal(created, 0);
+        assert.equal(written, 0);
+    });
+
+    it('contains Writer failures for both convenience and record writes', () => {
+        /** @type {any} */
+        const policy = {isEnabled: () => true};
+        /** @type {any} */
+        const recordFactory = {create: (/** @type {any} */ record) => Object.freeze({...record, time: new Date()})};
+        const logger = new Logger({
+            levels,
+            policy,
+            recordFactory,
+            writer: {write: () => { throw new Error('writer unavailable'); }},
+            source: 'App_User_Service',
+        });
+
+        assert.doesNotThrow(() => logger.info('message'));
+        assert.doesNotThrow(() => logger.write({level: 'info', message: 'record'}));
+    });
 });

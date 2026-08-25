@@ -84,6 +84,21 @@ export default class Logger {
         };
 
         /**
+         * Sends an enabled, normalized record without allowing an output
+         * problem to affect application control flow.
+         *
+         * @param {TeqFw_Log_Record} record
+         * @returns {void}
+         */
+        const writeToWriter = function (record) {
+            try {
+                writer.write(record);
+            } catch (error) {
+                reportWriterFailure(error);
+            }
+        };
+
+        /**
          * @param {TeqFw_Log_Level} level
          * @returns {boolean}
          */
@@ -99,11 +114,7 @@ export default class Logger {
         this.write = function (record) {
             const normalized = normalizeRecord(record);
             if (!this.isEnabled(normalized.level)) return;
-            try {
-                this.writer.write(normalized);
-            } catch (error) {
-                reportWriterFailure(error);
-            }
+            writeToWriter(normalized);
         };
 
         /**
@@ -116,11 +127,7 @@ export default class Logger {
             assertLevel(this.allowedLevels, level);
             if (!this.isEnabled(level)) return;
             const normalized = this.recordFactory.create({level, message, data, source: this.source});
-            try {
-                this.writer.write(normalized);
-            } catch (error) {
-                reportWriterFailure(error);
-            }
+            writeToWriter(normalized);
         };
 
         /**
