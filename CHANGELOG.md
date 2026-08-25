@@ -1,5 +1,15 @@
 # Changelog
 
+## [2.1.2] - 2026-08-25
+
+### Added
+
+- Added the `none` Policy value to disable all log levels for a matching source; `*=none` disables logging entirely before record creation and Writer invocation.
+
+### Changed
+
+- Documented selective re-enabling with more specific source rules across the README, agent skill, and project context.
+
 ## [2.1.1] - 2026-08-25
 
 ### Added

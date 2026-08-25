@@ -16,8 +16,8 @@ describe('TeqFw_Log_Policy_Factory', () => {
             setRules(rules) { received = rules; }
         }
         const factory = new Factory({levels, policyModule: /** @type {any} */ (Policy)});
-        /** @type {Record<string, TeqFw_Log_Level>} */
-        const rules = {'*': 'info'};
+        /** @type {Record<string, TeqFw_Log_Policy_Level>} */
+        const rules = {'*': 'none'};
 
         const policy = factory.create(rules);
 

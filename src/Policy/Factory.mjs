@@ -13,7 +13,7 @@ export default class Factory {
      */
     constructor({levels, policyModule}) {
         /**
-         * @param {Record<string, TeqFw_Log_Level>} rules
+         * @param {Record<string, TeqFw_Log_Policy_Level>} rules
          * @returns {TeqFw_Log_Policy}
          */
         this.create = function (rules) {

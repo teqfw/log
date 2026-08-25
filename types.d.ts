@@ -3,6 +3,7 @@ declare global {
   type TeqFw_Log_Data = Record<string, unknown>;
   type TeqFw_Log_Enum_Level = typeof import("./src/Enum/Level.mjs").default;
   type TeqFw_Log_Level = 'trace' | 'debug' | 'info' | 'warn' | 'error' | 'fatal';
+  type TeqFw_Log_Policy_Level = TeqFw_Log_Level | 'none';
   type TeqFw_Log_Logger = import("./src/Logger.mjs").default;
   type TeqFw_Log_Logger__Class = typeof import("./src/Logger.mjs").default;
   type TeqFw_Log_Provider = import("./src/Provider.mjs").default;
@@ -14,12 +15,14 @@ declare global {
   type TeqFw_Log_Policy_File = import("./src/Policy/File.mjs").default;
   type TeqFw_Log_Policy_Factory = import("./src/Policy/Factory.mjs").default;
   type TeqFw_Log_Node_Fs_ReadFile = (...args: any[]) => Promise<unknown>;
-  type TeqFw_Log_Policy_Rule = Readonly<{pattern: string; level: TeqFw_Log_Level; specificity: number}>;
+  type TeqFw_Log_Policy_Rule = Readonly<{pattern: string; level: TeqFw_Log_Policy_Level; specificity: number}>;
   type TeqFw_Log_Policy_Rules = ReadonlyArray<TeqFw_Log_Policy_Rule>;
   type TeqFw_Log_Writer = Readonly<{write(record: TeqFw_Log_Record): void}>;
 }
 
 export type TeqFw_Log_Level = 'trace' | 'debug' | 'info' | 'warn' | 'error' | 'fatal';
+
+export type TeqFw_Log_Policy_Level = TeqFw_Log_Level | 'none';
 
 export type TeqFw_Log_Data = Record<string, unknown>;
 
@@ -49,10 +52,10 @@ export interface TeqFw_Log_Provider {
 
 export interface TeqFw_Log_Policy {
   isEnabled(source: string, level: TeqFw_Log_Level): boolean;
-  setRules(rules: Record<string, TeqFw_Log_Level>): void;
+  setRules(rules: Record<string, TeqFw_Log_Policy_Level>): void;
   applyText(text: string): void;
-  setRule(pattern: string, level: TeqFw_Log_Level): void;
-  getRules(): Readonly<Record<string, TeqFw_Log_Level>>;
+  setRule(pattern: string, level: TeqFw_Log_Policy_Level): void;
+  getRules(): Readonly<Record<string, TeqFw_Log_Policy_Level>>;
 }
 
 export interface TeqFw_Log_Policy_File {

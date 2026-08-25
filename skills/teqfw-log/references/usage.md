@@ -61,9 +61,9 @@ export const __deps__ = {
 };
 ```
 
-`setRules(rules)` atomically replaces all rules. Its input must be a non-empty object containing the `*` default rule. Each pattern is either `*`, an exact TeqFW source, or a source-prefix ending in one `*`; each value is one of the fixed log levels. `setRule(pattern, level)` updates one rule and retains the rest.
+`setRules(rules)` atomically replaces all rules. Its input must be a non-empty object containing the `*` default rule. Each pattern is either `*`, an exact TeqFW source, or a source-prefix ending in one `*`; each value is one of the fixed log levels or `none`. `setRule(pattern, level)` updates one rule and retains the rest.
 
-Policy levels are thresholds: a `debug` rule enables `debug`, `info`, `warn`, `error`, and `fatal`. The longest literal matching pattern wins.
+Policy log levels are thresholds: a `debug` rule enables `debug`, `info`, `warn`, `error`, and `fatal`. `none` is not a log level; it disables every log level for its matching source. Set `{'*': 'none'}` to disable logging entirely, then add a more specific rule to re-enable a source. The longest literal matching pattern wins.
 
 For policy text already loaded by the host, call `policy.applyText(text)`. The grammar is one `pattern=level` rule per line; blank lines and lines beginning with `#` are ignored. Syntax errors, duplicate patterns, missing defaults, invalid patterns, and invalid levels leave the active rules unchanged.
 

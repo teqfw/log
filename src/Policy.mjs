@@ -7,6 +7,7 @@
 
 const SOURCE = /^[A-Z][A-Za-z0-9]*(?:_[A-Z][A-Za-z0-9]*)+$/;
 const PREFIX = /^[A-Z][A-Za-z0-9]*(?:_[A-Z][A-Za-z0-9]*)+_\*$/;
+const NONE = 'none';
 
 /** @param {unknown} value @returns {value is Record<string, unknown>} */
 function isRecord(value) {
@@ -43,7 +44,7 @@ export default class Policy {
         const values = Object.values(levels);
         /** @type {ReadonlyMap<string, number>} */
         const ranks = new Map(values.map((level, index) => [level, index]));
-        /** @type {ReadonlyArray<Readonly<{pattern: string, level: TeqFw_Log_Level, specificity: number}>>} */
+        /** @type {ReadonlyArray<Readonly<{pattern: string, level: TeqFw_Log_Policy_Level, specificity: number}>>} */
         let active = [];
         /**
          * @param {unknown} pattern
@@ -54,8 +55,8 @@ export default class Policy {
             if ((typeof pattern !== 'string') || !((pattern === '*') || SOURCE.test(pattern) || PREFIX.test(pattern))) {
                 throw new Error(`Log policy source pattern is invalid: '${String(pattern)}'.`);
             }
-            if ((typeof level !== 'string') || !ranks.has(level)) throw new Error(`Log policy level is invalid: '${String(level)}'.`);
-            return Object.freeze({pattern, level: /** @type {TeqFw_Log_Level} */ (level), specificity: pattern === '*' ? 0 : pattern.endsWith('*') ? pattern.length - 1 : pattern.length});
+            if ((typeof level !== 'string') || ((level !== NONE) && !ranks.has(level))) throw new Error(`Log policy level is invalid: '${String(level)}'.`);
+            return Object.freeze({pattern, level: /** @type {TeqFw_Log_Policy_Level} */ (level), specificity: pattern === '*' ? 0 : pattern.endsWith('*') ? pattern.length - 1 : pattern.length});
         };
         /**
          * @param {unknown} input
@@ -69,7 +70,7 @@ export default class Policy {
             if (!compiled.some(({pattern}) => pattern === '*')) throw new Error("Log policy requires a '*' default rule.");
             return Object.freeze(compiled.sort((left, right) => right.specificity - left.specificity));
         };
-        /** @param {Record<string, TeqFw_Log_Level>} nextRules */
+        /** @param {Record<string, TeqFw_Log_Policy_Level>} nextRules */
         this.setRules = function (nextRules) { active = compile(nextRules); };
         /**
          * Validates and applies policy-file text atomically.
@@ -77,9 +78,9 @@ export default class Policy {
          * @returns {void}
          */
         this.applyText = function (text) {
-            this.setRules(/** @type {Record<string, TeqFw_Log_Level>} */ (parsePolicyFile(text)));
+            this.setRules(/** @type {Record<string, TeqFw_Log_Policy_Level>} */ (parsePolicyFile(text)));
         };
-        /** @param {string} pattern @param {TeqFw_Log_Level} level */
+        /** @param {string} pattern @param {TeqFw_Log_Policy_Level} level */
         this.setRule = function (pattern, level) {
             const next = Object.fromEntries(active.map((item) => [item.pattern, item.level]));
             next[pattern] = level;
@@ -91,9 +92,10 @@ export default class Policy {
             const rank = ranks.get(level);
             if (rank === undefined) throw new Error(`Log level is invalid: '${String(level)}'.`);
             const selected = active.find(({pattern}) => (pattern === '*') || (pattern.endsWith('*') ? source.startsWith(pattern.slice(0, -1)) : source === pattern));
+            if (selected?.level === NONE) return false;
             return rank >= /** @type {number} */ (ranks.get(/** @type {TeqFw_Log_Level} */ (selected?.level)));
         };
-        /** @returns {Readonly<Record<string, TeqFw_Log_Level>>} */
+        /** @returns {Readonly<Record<string, TeqFw_Log_Policy_Level>>} */
         this.getRules = function () { return Object.freeze(Object.fromEntries(active.map(({pattern, level}) => [pattern, level]))); };
         this.setRules({'*': 'info'});
         Object.freeze(this);

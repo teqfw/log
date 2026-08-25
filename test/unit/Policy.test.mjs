@@ -15,6 +15,18 @@ describe('TeqFw_Log_Policy', () => {
         assert.equal(policy.isEnabled('App_User_Service', 'fatal'), true);
     });
 
+    it('disables every log level with none and permits a more specific override', () => {
+        const policy = new Policy({levels});
+        policy.setRules({'*': 'none', 'App_Import_*': 'info'});
+
+        for (const level of Object.values(levels)) {
+            assert.equal(policy.isEnabled('App_Other_Service', level), false);
+        }
+        assert.equal(policy.isEnabled('App_Import_Run', 'debug'), false);
+        assert.equal(policy.isEnabled('App_Import_Run', 'info'), true);
+        assert.deepEqual(policy.getRules(), {'App_Import_*': 'info', '*': 'none'});
+    });
+
     it('selects the most specific matching source rule', () => {
         const policy = new Policy({levels});
         policy.setRules({'*': 'warn', 'App_Import_*': 'debug', 'App_Import_Run': 'trace'});
@@ -35,8 +47,8 @@ describe('TeqFw_Log_Policy', () => {
 
     it('parses valid files and rejects malformed rules and levels atomically', () => {
         const policy = new Policy({levels});
-        const rules = parsePolicyFile('# runtime policy\n*=warn\nApp_Import_*=trace\n');
-        policy.setRules(/** @type {Record<string, 'trace'|'debug'|'info'|'warn'|'error'|'fatal'>} */ (rules));
+        const rules = parsePolicyFile('# runtime policy\n*=none\nApp_Import_*=trace\n');
+        policy.setRules(/** @type {Record<string, TeqFw_Log_Policy_Level>} */ (rules));
         assert.equal(policy.isEnabled('App_Import_Run', 'trace'), true);
         assert.throws(() => policy.setRules(/** @type {any} */ (parsePolicyFile('*=bad'))), /level is invalid/);
         assert.throws(() => parsePolicyFile('App_Import_*=debug=oops'), /malformed/);

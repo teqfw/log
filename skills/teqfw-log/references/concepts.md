@@ -33,7 +33,7 @@ The built-in console writer prefixes its human-readable message with the record'
 
 ## Runtime Policy
 
-The Provider shares one mutable `TeqFw_Log_Policy` with every bound logger. Its default rule is `*=info`; a rule's level is a threshold. Rules are `*`, exact TeqFW sources, or a trailing source-prefix `*`, and the longest literal match wins. Policy, not Writer, decides whether a record is enabled. Changing its rules immediately affects existing loggers.
+The Provider shares one mutable `TeqFw_Log_Policy` with every bound logger. Its default rule is `*=info`; a rule's log level is a threshold. Rules are `*`, exact TeqFW sources, or a trailing source-prefix `*`, and the longest literal match wins. The special Policy value `none` disables every log level for a matching source; `*=none` disables logging entirely. Policy, not Writer, decides whether a record is enabled. Changing its rules immediately affects existing loggers.
 
 `@teqfw/log` owns the compact policy-file grammar (`pattern=level`, with blank lines and `#` comments) and explicit `TeqFw_Log_Policy_File$` loading. It does not locate host files or depend on cfg.
 

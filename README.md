@@ -63,7 +63,7 @@ Do not import `@teqfw/log/src/**`.
 
 ## Runtime logging policy
 
-Each Provider shares one `TeqFw_Log_Policy$` with all of its bound loggers. The default `*=info` writes `info` and more severe events to the built-in console writer. A rule level is a threshold: it enables that level and all more severe levels. Rules must include the `*` default and may be only:
+Each Provider shares one `TeqFw_Log_Policy$` with all of its bound loggers. The default `*=info` writes `info` and more severe events to the built-in console writer. A rule level is a threshold: it enables that level and all more severe levels. The special Policy value `none` disables every log level for its matching source. Rules must include the `*` default and may be only:
 
 - `*` — the default rule;
 - an exact TeqFW source such as `App_Import_Run`;
@@ -76,6 +76,14 @@ The longest literal match wins:
 TeqFw_Db_*=debug
 App_Import_*=trace
 ```
+
+Disable all logging without creating records or calling the Writer:
+
+```text
+*=none
+```
+
+A more specific source rule may re-enable logging, for example `App_Import_*=debug`.
 
 Inject the shared Policy into a host configuration component and change it explicitly:
 

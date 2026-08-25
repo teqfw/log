@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import {describe, it} from 'node:test';
 
 import Logger from '../../src/Logger.mjs';
+import Policy from '../../src/Policy.mjs';
 
 const levels = Object.freeze({
     TRACE: 'trace', DEBUG: 'debug', INFO: 'info', WARN: 'warn', ERROR: 'error', FATAL: 'fatal',
@@ -56,6 +57,26 @@ describe('TeqFw_Log_Logger', () => {
         let written = 0;
         /** @type {any} */
         const policy = {isEnabled: () => false};
+        /** @type {any} */
+        const recordFactory = {create: () => {
+            created += 1;
+            return Object.freeze({level: 'debug', message: 'ignored'});
+        }};
+        const logger = new Logger({
+            levels, policy, recordFactory, writer: {write: () => { written += 1; }}, source: 'App_User_Service',
+        });
+
+        logger.debug('ignored');
+
+        assert.equal(created, 0);
+        assert.equal(written, 0);
+    });
+
+    it('does not create or emit records when the real Policy uses none', () => {
+        let created = 0;
+        let written = 0;
+        const policy = new Policy({levels});
+        policy.setRules({'*': 'none'});
         /** @type {any} */
         const recordFactory = {create: () => {
             created += 1;
