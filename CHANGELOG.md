@@ -2,14 +2,14 @@
 
 ## [2.1.0] - 2026-08-25
 
-### Added (2.1.0)
+### Added
 
 - Added a shared mutable source-and-level Policy to the DI logging contract. The default `*=info` policy filters source-bound loggers before the Writer receives a record.
 - Added programmatic Policy creation and updates through `TeqFw_Log_Policy_Factory$`, `setRules()`, and `setRule()`.
 - Added explicit Node.js policy-file loading through `TeqFw_Log_Policy_File$` with atomic parsing of `pattern=level` rules.
 - Added policy-aware unit and integration coverage, including the distributed consumer contract.
 
-### Changed (2.1.0)
+### Changed
 
 - Documented Policy patterns, thresholds, atomic validation, file-loading boundaries, and independent Factory-created Policy instances in the README and version-matched agent skill.
 - Updated all Policy usage examples to receive Policy components through TeqFW DI rather than requesting values from the Container.
@@ -46,7 +46,7 @@
 
 ## [0.1.0] - 2026-07-09 - Initial npm package bootstrap
 
-### Added (0.1.0)
+### Added
 
 - Added package-root bootstrap for the future `@teqfw/log` npm package.
 - Added root metadata files: `.gitignore`, `AGENTS.md`, `jsconfig.json`, `package.json`, `README.md`, and `types.d.ts`.
