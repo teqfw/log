@@ -28,6 +28,29 @@ export default class Writer {
         };
 
         /**
+         * @param {Date|string|number|undefined} value
+         * @returns {string}
+         */
+        const formatTime = function (value) {
+            const date = value instanceof Date ? value : new Date(value ?? NaN);
+            if (Number.isNaN(date.getTime())) return 'invalid-time';
+
+            /**
+             * @param {number} number
+             * @param {number} [width]
+             * @returns {string}
+             */
+            const pad = (number, width = 2) => String(number).padStart(width, '0');
+            const offsetMinutes = -date.getTimezoneOffset();
+            const offsetSign = offsetMinutes >= 0 ? '+' : '-';
+            const offsetHours = Math.floor(Math.abs(offsetMinutes) / 60);
+            const offsetRemainder = Math.abs(offsetMinutes) % 60;
+            return `${pad(date.getFullYear(), 4)}${pad(date.getMonth() + 1)}${pad(date.getDate())}`
+                + `-${pad(date.getHours())}${pad(date.getMinutes())}${pad(date.getSeconds())}.${pad(date.getMilliseconds(), 3)}`
+                + `(${offsetSign}${pad(offsetHours)}:${pad(offsetRemainder)})`;
+        };
+
+        /**
          * @param {TeqFw_Log_Record} record
          * @returns {void}
          */
@@ -36,7 +59,7 @@ export default class Writer {
             if (!consoleApi) return;
 
             const source = record.source ?? 'unknown';
-            const message = `[${record.level}] ${source}: ${record.message}`;
+            const message = `${formatTime(record.time)} [${record.level}] ${source}: ${record.message}`;
             const data = record.data ? {...record.data} : undefined;
             if (data?.err !== undefined) data.err = normalizeError(data.err);
 

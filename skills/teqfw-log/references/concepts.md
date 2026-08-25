@@ -29,6 +29,8 @@ The package defines a deliberately small logging surface:
 - structured `message + data` record shape;
 - reference console writer.
 
+The built-in console writer prefixes its human-readable message with the record's local timestamp in `YYYYMMDD-HHMMSS.MMM(+HH:MM)` form. This is output formatting only; `record.time` remains the unchanged structured timestamp value for custom Writers.
+
 ## Runtime Policy
 
 The Provider shares one mutable `TeqFw_Log_Policy` with every bound logger. Its default rule is `*=info`; a rule's level is a threshold. Rules are `*`, exact TeqFW sources, or a trailing source-prefix `*`, and the longest literal match wins. Policy, not Writer, decides whether a record is enabled. Changing its rules immediately affects existing loggers.

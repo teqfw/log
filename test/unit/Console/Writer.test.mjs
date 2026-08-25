@@ -40,6 +40,22 @@ describe('TeqFw_Log_Console_Writer', () => {
         );
     });
 
+    it('prefixes messages with local record time including milliseconds and UTC offset', () => {
+        const writer = new TeqFw_Log_Console_Writer();
+        const time = new Date(2026, 7, 25, 10, 20, 30, 456);
+        const offsetMinutes = -time.getTimezoneOffset();
+        const offsetSign = offsetMinutes >= 0 ? '+' : '-';
+        const offsetHours = String(Math.floor(Math.abs(offsetMinutes) / 60)).padStart(2, '0');
+        const offsetRemainder = String(Math.abs(offsetMinutes) % 60).padStart(2, '0');
+
+        writer.write({level: 'info', message: 'loaded', source: 'App_A', time});
+
+        assert.equal(
+            calls[0].args[0],
+            `20260825-102030.456(${offsetSign}${offsetHours}:${offsetRemainder}) [info] App_A: loaded`
+        );
+    });
+
     it('preserves error details in data.err', () => {
         const writer = new TeqFw_Log_Console_Writer();
         const cause = new Error('root cause');
