@@ -30,6 +30,7 @@ That enables:
 - fixed levels: `trace`, `debug`, `info`, `warn`, `error`, and `fatal`;
 - structured `message + data` records, including `data.err` for caught errors;
 - a browser- and Node.js-compatible console reference writer;
+- a shared mutable policy with `*=info` as the out-of-box threshold;
 - composition-root control over optional custom writers and their shutdown.
 
 ## Quick start
@@ -59,6 +60,18 @@ export const __deps__ = {
 - `@teqfw/log` — the `TeqFw_Log_Provider` DI component and its public TypeScript-facing contract types.
 
 Do not import `@teqfw/log/src/**`.
+
+## Runtime logging policy
+
+Every provider shares one `TeqFw_Log_Policy$`. The default `*=info` writes `info` and more severe events to the built-in console writer. A policy rule is an exact source or a trailing namespace prefix; the longest match wins:
+
+```text
+*=info
+TeqFw_Db_*=debug
+App_Import_*=trace
+```
+
+Use `TeqFw_Log_Policy_Factory$` to create a policy from programmatic rules, or the shared DI Policy component to replace or change live rules; loggers that already exist see the update immediately. `Logger.isEnabled(level)` and actual output consult the same policy. `TeqFw_Log_Policy_File$` explicitly applies a file with the format above; blank lines and `#` comments are allowed. Invalid syntax, patterns, or levels fail without changing the active policy. log itself never searches for configuration files.
 
 ## Agent-ready package
 

@@ -55,7 +55,7 @@ export interface PackageApiContract {
  */
 export const PACKAGE_API: PackageApiContract = {
     packageName: '@teqfw/log',
-    packageRole: 'Minimal TeqFW logging contract with a DI root provider, source-bound logger, immutable log records, and a reference console writer.',
+    packageRole: 'Minimal TeqFW logging contract with a DI root provider, shared mutable Policy, source-bound loggers, immutable records, and a reference console writer.',
     canonicalEntrypoints: ['@teqfw/log'],
     publicRuntime: [
         {
@@ -81,8 +81,35 @@ export const PACKAGE_API: PackageApiContract = {
                 },
             ],
         },
+        {
+            alias: 'TeqFw_Log_Policy',
+            kind: 'factory',
+            role: 'Shared mutable source-and-level threshold policy used by Provider loggers.',
+            imports: [],
+            methods: [
+                {name: 'setRules', signature: 'setRules(rules: Record<string, TeqFw_Log_Level>): void', summary: 'Atomically replaces validated rules.'},
+                {name: 'setRule', signature: 'setRule(pattern: string, level: TeqFw_Log_Level): void', summary: 'Adds or changes one live rule.'},
+                {name: 'isEnabled', signature: 'isEnabled(source: string, level: TeqFw_Log_Level): boolean', summary: 'Uses the most specific matching source rule.'},
+            ],
+        },
+        {
+            alias: 'TeqFw_Log_Policy_Factory',
+            kind: 'factory',
+            role: 'Creates independent Policy instances from a programmatic source-rule record.',
+            imports: [],
+            methods: [
+                {name: 'create', signature: 'create(rules: Record<string, TeqFw_Log_Level>): TeqFw_Log_Policy', summary: 'Validates and returns a new mutable policy.'},
+            ],
+        },
     ],
     structuralContracts: [
+        {
+            name: 'Logging Policy',
+            kind: 'protocol',
+            aliases: ['TeqFw_Log_Policy', 'TeqFw_Log_Policy_File'],
+            summary: 'Mutable log-owned filtering policy and explicit Node.js policy-file loader.',
+            notes: ['The default is *=info.', 'Policy files use one pattern=level rule per line; log never discovers their paths.'],
+        },
         {
             name: 'Log Provider',
             kind: 'protocol',

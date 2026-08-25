@@ -3,6 +3,7 @@ import {describe, it} from 'node:test';
 
 import TeqFw_Log_Enum_Level from '../../../src/Enum/Level.mjs';
 import TeqFw_Log_Logger from '../../../src/Logger.mjs';
+import TeqFw_Log_Policy from '../../../src/Policy.mjs';
 import TeqFw_Log_Record_Factory from '../../../src/Record/Factory.mjs';
 
 describe('TeqFw_Log_Logger', () => {
@@ -11,10 +12,12 @@ describe('TeqFw_Log_Logger', () => {
     /** @type {TeqFw_Log_Writer} */
     const writer = {write: (record) => calls.push(record)};
     const recordFactory = new TeqFw_Log_Record_Factory();
+    const policy = new TeqFw_Log_Policy({levels: TeqFw_Log_Enum_Level});
 
     it('implements source-bound logger module directly', () => {
         const logger = new TeqFw_Log_Logger({
             levels: TeqFw_Log_Enum_Level,
+            policy,
             recordFactory,
             writer,
             source: 'App_User_Service',
@@ -28,8 +31,10 @@ describe('TeqFw_Log_Logger', () => {
     });
 
     it('maps helper methods to fixed levels', () => {
+        policy.setRule('*', 'trace');
         const logger = new TeqFw_Log_Logger({
             levels: TeqFw_Log_Enum_Level,
+            policy,
             recordFactory,
             writer,
             source: 'App_Billing_Payment_Processor',
@@ -50,6 +55,7 @@ describe('TeqFw_Log_Logger', () => {
     it('rejects conflicting record source', () => {
         const logger = new TeqFw_Log_Logger({
             levels: TeqFw_Log_Enum_Level,
+            policy,
             recordFactory,
             writer,
             source: 'App_User_Service',
@@ -63,12 +69,14 @@ describe('TeqFw_Log_Logger', () => {
     it('rejects invalid source', () => {
         assert.throws(() => new TeqFw_Log_Logger({
             levels: TeqFw_Log_Enum_Level,
+            policy,
             recordFactory,
             writer,
             source: 'service',
         }), /invalid/);
         assert.throws(() => new TeqFw_Log_Logger({
             levels: TeqFw_Log_Enum_Level,
+            policy,
             recordFactory,
             writer,
             source: 'App_User_Service$',

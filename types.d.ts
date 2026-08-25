@@ -9,6 +9,13 @@ declare global {
   type TeqFw_Log_Provider__Class = typeof import("./src/Provider.mjs").default;
   type TeqFw_Log_Record = Readonly<{level: TeqFw_Log_Level; message: string; data?: Readonly<TeqFw_Log_Data>; source?: string; time?: Date | string | number}>;
   type TeqFw_Log_Record_Factory = import("./src/Record/Factory.mjs").default;
+  type TeqFw_Log_Policy = import("./src/Policy.mjs").default;
+  type TeqFw_Log_Policy__Class = typeof import("./src/Policy.mjs").default;
+  type TeqFw_Log_Policy_File = import("./src/Policy/File.mjs").default;
+  type TeqFw_Log_Policy_Factory = import("./src/Policy/Factory.mjs").default;
+  type TeqFw_Log_Node_Fs_ReadFile = (...args: any[]) => Promise<unknown>;
+  type TeqFw_Log_Policy_Rule = Readonly<{pattern: string; level: TeqFw_Log_Level; specificity: number}>;
+  type TeqFw_Log_Policy_Rules = ReadonlyArray<TeqFw_Log_Policy_Rule>;
   type TeqFw_Log_Writer = Readonly<{write(record: TeqFw_Log_Record): void}>;
 }
 
@@ -40,10 +47,23 @@ export interface TeqFw_Log_Provider {
   forSource(source: string): TeqFw_Log_Logger;
 }
 
+export interface TeqFw_Log_Policy {
+  isEnabled(source: string, level: TeqFw_Log_Level): boolean;
+  setRules(rules: Record<string, TeqFw_Log_Level>): void;
+  applyText(text: string): void;
+  setRule(pattern: string, level: TeqFw_Log_Level): void;
+  getRules(): Readonly<Record<string, TeqFw_Log_Level>>;
+}
+
+export interface TeqFw_Log_Policy_File {
+  apply(path: string): Promise<void>;
+}
+
 export interface TeqFw_Log_Provider__Class {
   new (dependencies: {
     levels: TeqFw_Log_Enum_Level;
     loggerModule: TeqFw_Log_Logger__Class;
+    policy: TeqFw_Log_Policy;
     recordFactory: TeqFw_Log_Record_Factory;
     writer: TeqFw_Log_Writer;
   }): TeqFw_Log_Provider;

@@ -29,7 +29,13 @@ The package defines a deliberately small logging surface:
 - structured `message + data` record shape;
 - reference console writer.
 
-The package does not define transports, sinks, routing policies, batching, or logging configuration DSLs.
+## Runtime Policy
+
+The Provider shares one mutable `TeqFw_Log_Policy` with every bound logger. Its default rule is `*=info`; a rule's level is a threshold. Rules are `*`, exact TeqFW sources, or a trailing source-prefix `*`, and the longest literal match wins. Policy, not Writer, decides whether a record is enabled. Changing its rules immediately affects existing loggers.
+
+`@teqfw/log` owns the compact policy-file grammar (`pattern=level`, with blank lines and `#` comments) and explicit `TeqFw_Log_Policy_File$` loading. It does not locate host files or depend on cfg.
+
+The package does not define transports, sinks, batching, configuration discovery, or an application bootstrap API.
 
 ## Host Composition Root
 

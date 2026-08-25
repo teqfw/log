@@ -49,14 +49,16 @@ export default class Logger {
     /**
      * @param {object} deps
      * @param {TeqFw_Log_Enum_Level} deps.levels
+     * @param {TeqFw_Log_Policy} deps.policy
      * @param {TeqFw_Log_Record_Factory} deps.recordFactory
      * @param {TeqFw_Log_Writer} deps.writer
      * @param {string} deps.source
      */
-    constructor({levels, recordFactory, writer, source}) {
+    constructor({levels, policy, recordFactory, writer, source}) {
         this.levelMap = levels;
         this.allowedLevels = new Set(Object.values(levels));
         this.recordFactory = recordFactory;
+        this.policy = policy;
         this.writer = writer;
         this.source = source;
         assertSource(source);
@@ -87,7 +89,7 @@ export default class Logger {
          */
         this.isEnabled = function (level) {
             assertLevel(this.allowedLevels, level);
-            return true;
+            return this.policy.isEnabled(this.source, level);
         };
 
         /**
@@ -96,6 +98,7 @@ export default class Logger {
          */
         this.write = function (record) {
             const normalized = normalizeRecord(record);
+            if (!this.isEnabled(normalized.level)) return;
             try {
                 this.writer.write(normalized);
             } catch (error) {
@@ -111,6 +114,7 @@ export default class Logger {
          */
         this.log = function (level, message, data) {
             assertLevel(this.allowedLevels, level);
+            if (!this.isEnabled(level)) return;
             const normalized = this.recordFactory.create({level, message, data, source: this.source});
             try {
                 this.writer.write(normalized);

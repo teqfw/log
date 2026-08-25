@@ -35,6 +35,10 @@ export const __deps__ = {
 - use `data.err` for caught errors;
 - check `isEnabled(level)` only when payload construction is expensive.
 
+## Configure Policy At Runtime
+
+Resolve `TeqFw_Log_Policy_Factory$` and call `create({'*': 'info', 'App_Import_*': 'trace'})` for an independent programmatic Policy. Resolve the shared `TeqFw_Log_Policy$` to call `setRules(...)` or `setRule('TeqFw_Db_*', 'debug')`. Resolve `TeqFw_Log_Policy_File$` and call `apply(path)` to validate and apply an explicit policy file. Shared-policy updates are immediately used by existing loggers.
+
 ## Discouraged Practices
 
 - creating source-bound loggers inside business methods;
