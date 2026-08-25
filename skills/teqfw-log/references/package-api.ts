@@ -38,8 +38,8 @@ export interface StructuralContract {
 export interface PackageApiContract {
     readonly packageName: '@teqfw/log';
     readonly packageRole: string;
-    readonly canonicalEntrypoints: readonly string[];
-    readonly publicRuntime: readonly RuntimeComponentContract[];
+    readonly typeEntrypoints: readonly string[];
+    readonly diComponents: readonly RuntimeComponentContract[];
     readonly structuralContracts: readonly StructuralContract[];
     readonly operationalNotes: readonly string[];
 }
@@ -49,26 +49,20 @@ export interface PackageApiContract {
  * as an npm dependency.
  *
  * This file distinguishes between:
- * - importable runtime API supported by `package.json#exports`
+ * - DI runtime components resolved through namespace metadata
  * - structural contracts that external code may rely on indirectly
  * - internal implementation details that are not part of the supported surface
  */
 export const PACKAGE_API: PackageApiContract = {
     packageName: '@teqfw/log',
     packageRole: 'Minimal TeqFW logging contract with a DI root provider, shared mutable Policy, source-bound loggers, immutable records, and a reference console writer.',
-    canonicalEntrypoints: ['@teqfw/log'],
-    publicRuntime: [
+    typeEntrypoints: ['@teqfw/log'],
+    diComponents: [
         {
             alias: 'TeqFw_Log_Provider',
             kind: 'factory',
             role: 'Root runtime provider that returns source-bound loggers and is intended to be injected through TeqFW DI.',
-            imports: [
-                {
-                    specifier: '@teqfw/log',
-                    exportName: 'default',
-                    canonical: true,
-                },
-            ],
+            imports: [],
             methods: [
                 {
                     name: 'forSource',
@@ -171,6 +165,7 @@ export const PACKAGE_API: PackageApiContract = {
     operationalNotes: [
         'Package code should usually depend on TeqFw_Log_Provider rather than construct loggers directly.',
         'Bind one stable source once and reuse the returned logger.',
+        'The @teqfw/log package root exposes TypeScript declarations only and must not be imported at runtime.',
         'The npm package exposes only @teqfw/log; package-internal source files are not supported public APIs.',
         'Behavior not documented in this file or the companion skill references should be treated as unsupported.',
     ],

@@ -42,8 +42,9 @@ describe('TeqFw_Log_Console_Writer', () => {
 
     it('preserves error details in data.err', () => {
         const writer = new TeqFw_Log_Console_Writer();
+        const cause = new Error('root cause');
         /** @type {Error & {code?: string}} */
-        const err = new Error('broken');
+        const err = new Error('broken', {cause});
         err.code = 'E_TEST';
         writer.write({
             level: 'error',
@@ -57,6 +58,8 @@ describe('TeqFw_Log_Console_Writer', () => {
         assert.equal(calls[0].args[1].requestId, 'req-1');
         assert.equal(calls[0].args[1].err.name, 'Error');
         assert.equal(calls[0].args[1].err.message, 'broken');
+        assert.equal(calls[0].args[1].err.stack, err.stack);
         assert.equal(calls[0].args[1].err.code, 'E_TEST');
+        assert.equal(calls[0].args[1].err.cause, cause);
     });
 });

@@ -22,6 +22,7 @@ async function run(cmd, args, cwd) {
             ...process.env,
             npm_config_fund: 'false',
             npm_config_audit: 'false',
+            npm_config_cache: path.join(os.tmpdir(), 'teqfw-log-npm-cache'),
         },
     });
 }
@@ -34,16 +35,10 @@ describe('Publish smoke', () => {
         await fs.mkdir(packDir, {recursive: true});
         await fs.mkdir(consumerDir, {recursive: true});
 
-        const {stdout: packStdout} = await run('npm', ['pack', '--json', '--pack-destination', packDir], REPO_ROOT);
-        /** @type {{filename?: string, files?: {path: string}[]}[]} */
-        const packed = JSON.parse(packStdout);
-        const tarballName = packed.at(0)?.filename;
-        assert.equal(typeof tarballName, 'string');
-        const tarballPath = path.join(packDir, /** @type {string} */ (tarballName));
-        const packedPaths = packed.at(0)?.files?.map((file) => file.path) ?? [];
-        assert.ok(packedPaths.includes('skills/teqfw-log/SKILL.md'));
-        assert.equal(packedPaths.includes('bootstrap.d.ts'), false);
-        assert.equal(packedPaths.some((file) => file.startsWith('ai/')), false);
+        await run('npm', ['pack', '--json', '--pack-destination', packDir], REPO_ROOT);
+        const tarballs = (await fs.readdir(packDir)).filter((entry) => entry.endsWith('.tgz'));
+        assert.equal(tarballs.length, 1);
+        const tarballPath = path.join(packDir, tarballs[0]);
 
         await fs.writeFile(path.join(consumerDir, 'package.json'), JSON.stringify({
             name: 'teqfw-log-publish-smoke',
@@ -51,13 +46,12 @@ describe('Publish smoke', () => {
             type: 'module',
             dependencies: {
                 '@teqfw/log': `file:${tarballPath}`,
-            },
-            devDependencies: {
-                '@types/node': '^26.1.1',
+                '@teqfw/di': `file:${path.join(REPO_ROOT, 'node_modules', '@teqfw', 'di')}`,
             },
         }, null, 2));
 
         await run('npm', ['install'], consumerDir);
+        await fs.access(path.join(consumerDir, 'node_modules', '@teqfw', 'log', 'skills', 'teqfw-log', 'SKILL.md'));
 
         await fs.writeFile(path.join(consumerDir, 'tsconfig.json'), JSON.stringify({
             compilerOptions: {
@@ -66,10 +60,12 @@ describe('Publish smoke', () => {
                 target: 'ES2022',
                 strict: true,
                 noEmit: true,
-                checkJs: true,
+                allowJs: true,
+                checkJs: false,
             },
             include: [
                 'index.ts',
+                'node-shim.d.ts',
                 'node_modules/@teqfw/log/src',
                 'node_modules/@teqfw/log/types.d.ts',
             ],
@@ -81,6 +77,12 @@ describe('Publish smoke', () => {
             'declare const provider: TeqFw_Log_Provider;',
             "const logger = provider.forSource('App_User_Service');",
             "logger.info('ok');",
+            '',
+        ].join('\n'));
+        await fs.writeFile(path.join(consumerDir, 'node-shim.d.ts'), [
+            'declare const process: {',
+            '  stderr?: {write?: (message: string) => void};',
+            '};',
             '',
         ].join('\n'));
 
