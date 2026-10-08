@@ -1,22 +1,32 @@
 declare global {
   type TeqFw_Log_Console_Writer = import("./src/Console/Writer.mjs").default;
+  type TeqFw_Log_Console_Writer__Class = typeof import("./src/Console/Writer.mjs").default;
   type TeqFw_Log_Data = Record<string, unknown>;
   type TeqFw_Log_Enum_Level = typeof import("./src/Enum/Level.mjs").default;
   type TeqFw_Log_Level = 'trace' | 'debug' | 'info' | 'warn' | 'error' | 'fatal';
-  type TeqFw_Log_Policy_Level = TeqFw_Log_Level | 'none';
   type TeqFw_Log_Logger = import("./src/Logger.mjs").default;
   type TeqFw_Log_Logger__Class = typeof import("./src/Logger.mjs").default;
+  type TeqFw_Log_Node_Fs_ReadFile = (...args: any[]) => Promise<unknown>;
+  type TeqFw_Log_Policy = import("./src/Policy.mjs").default;
+  type TeqFw_Log_Policy_Factory = import("./src/Policy/Factory.mjs").default;
+  type TeqFw_Log_Policy_Factory__Class = typeof import("./src/Policy/Factory.mjs").default;
+  type TeqFw_Log_Policy_File = import("./src/Policy/File.mjs").default;
+  type TeqFw_Log_Policy_File__Class = typeof import("./src/Policy/File.mjs").default;
+  type TeqFw_Log_Policy_Level = TeqFw_Log_Level | 'none';
+  type TeqFw_Log_Policy_Rule = Readonly<{pattern: string; level: TeqFw_Log_Policy_Level; specificity: number}>;
+  type TeqFw_Log_Policy_Rules = ReadonlyArray<TeqFw_Log_Policy_Rule>;
+  type TeqFw_Log_Policy__Class = typeof import("./src/Policy.mjs").default;
+  type TeqFw_Log_Policy__parsePolicyFile = typeof import("./src/Policy.mjs").parsePolicyFile;
   type TeqFw_Log_Provider = import("./src/Provider.mjs").default;
   type TeqFw_Log_Provider__Class = typeof import("./src/Provider.mjs").default;
   type TeqFw_Log_Record = Readonly<{level: TeqFw_Log_Level; message: string; data?: Readonly<TeqFw_Log_Data>; source?: string; time?: Date | string | number}>;
+  type TeqFw_Log_Record_Data = Record<string, any>;
+  type TeqFw_Log_Record_Dto = {level: TeqFw_Log_Level; message: string; data?: Readonly<TeqFw_Log_Record_Data>; source?: string; time: Date | string | number};
   type TeqFw_Log_Record_Factory = import("./src/Record/Factory.mjs").default;
-  type TeqFw_Log_Policy = import("./src/Policy.mjs").default;
-  type TeqFw_Log_Policy__Class = typeof import("./src/Policy.mjs").default;
-  type TeqFw_Log_Policy_File = import("./src/Policy/File.mjs").default;
-  type TeqFw_Log_Policy_Factory = import("./src/Policy/Factory.mjs").default;
-  type TeqFw_Log_Node_Fs_ReadFile = (...args: any[]) => Promise<unknown>;
-  type TeqFw_Log_Policy_Rule = Readonly<{pattern: string; level: TeqFw_Log_Policy_Level; specificity: number}>;
-  type TeqFw_Log_Policy_Rules = ReadonlyArray<TeqFw_Log_Policy_Rule>;
+  type TeqFw_Log_Record_Factory__Class = typeof import("./src/Record/Factory.mjs").default;
+  type TeqFw_Log_Record_Factory__createLogRecord = typeof import("./src/Record/Factory.mjs").createLogRecord;
+  type TeqFw_Log_Record_Factory__isLogDataObject = typeof import("./src/Record/Factory.mjs").isLogDataObject;
+  type TeqFw_Log_Record_Input = {level: TeqFw_Log_Level; message: string; data?: TeqFw_Log_Record_Data; source?: string; time?: Date | string | number};
   type TeqFw_Log_Writer = Readonly<{write(record: TeqFw_Log_Record): void}>;
 }
 

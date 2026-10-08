@@ -3,21 +3,6 @@
 /**
  * @namespace TeqFw_Log_Record_Factory
  * @description Creates immutable log-record DTOs for the base logging contract.
- * @typedef {Record<string, any>} TeqFw_Log_Record_Data
- * @typedef {{
- *   level: TeqFw_Log_Level,
- *   message: string,
- *   data?: TeqFw_Log_Record_Data,
- *   source?: string,
- *   time?: Date|string|number
- * }} TeqFw_Log_Record_Input
- * @typedef {{
- *   level: TeqFw_Log_Level,
- *   message: string,
- *   data?: Readonly<TeqFw_Log_Record_Data>,
- *   source?: string,
- *   time: Date|string|number
- * }} TeqFw_Log_Record_Dto
  */
 
 /**
