@@ -28,7 +28,7 @@ export default class Writer {
         };
 
         /**
-         * @param {Date|string|number|undefined} value
+         * @param {TeqFw_Log_TimeValue} value
          * @returns {string}
          */
         const formatTime = function (value) {

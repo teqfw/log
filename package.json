@@ -57,9 +57,10 @@
     "test:unit": "find test/unit -name '*.test.mjs' -print0 | xargs -0 node --test",
     "test:integration": "find test/integration -name '*.test.mjs' -print0 | xargs -0 node --test",
     "test:publish": "node --test --test-isolation=none test/publish/smoke.test.mjs",
-    "test": "npm run test:unit && npm run test:integration && npm run test:publish",
+    "test": "npm run check:esm && npm run test:unit && npm run test:integration && npm run test:publish",
     "typecheck": "tsc -p jsconfig.json",
-    "lint:md": "markdownlint-cli2 \"skills/**/*.md\" \"*.md\""
+    "lint:md": "markdownlint-cli2 \"skills/**/*.md\" \"*.md\"",
+    "check:esm": "teqfw-esm-validator src --profile type-regular"
   },
   "dependencies": {
     "@teqfw/di": ">=2.9.0"
@@ -72,6 +73,7 @@
     "url": "https://github.com/sponsors/teqfw"
   },
   "devDependencies": {
+    "@flancer32/skill-teqfw-esm-validator": "^0.15.2",
     "@types/node": "^26.1.1",
     "markdownlint-cli2": "^0.23.2",
     "typescript": "^5.9.3",

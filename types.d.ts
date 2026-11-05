@@ -4,6 +4,8 @@ declare global {
   type TeqFw_Log_Data = Record<string, unknown>;
   type TeqFw_Log_Enum_Level = typeof import("./src/Enum/Level.mjs").default;
   type TeqFw_Log_Level = 'trace' | 'debug' | 'info' | 'warn' | 'error' | 'fatal';
+    type TeqFw_Log_LevelSet = Readonly<{has: (level: TeqFw_Log_Level) => boolean}>;
+    type TeqFw_Log_TimeValue = Date | string | number | undefined;
   type TeqFw_Log_Logger = import("./src/Logger.mjs").default;
   type TeqFw_Log_Logger__Class = typeof import("./src/Logger.mjs").default;
   type TeqFw_Log_Node_Fs_ReadFile = (...args: any[]) => Promise<unknown>;

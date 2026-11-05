@@ -35,7 +35,7 @@ function assertSource(source) {
 }
 
 /**
- * @param {Set<string>} allowedLevels
+ * @param {TeqFw_Log_LevelSet} allowedLevels
  * @param {TeqFw_Log_Level} level
  * @returns {void}
  */
